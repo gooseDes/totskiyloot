@@ -1,5 +1,8 @@
 window.addEventListener("load", function() {
     document.getElementById("userButton").addEventListener("click", function() {
-        window.location.href = "signin.html";
+        goto('signin');
+    });
+    document.getElementById("letsgoButton").addEventListener("click", function() {
+        goto('games');
     });
 });

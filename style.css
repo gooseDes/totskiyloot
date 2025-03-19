@@ -18,6 +18,7 @@
     font-size: 5svh;
     transition: all 0.25s ease-in-out;
     filter: none;
+    margin-bottom: 0;
 }
 
 .letsgo_button:hover {
@@ -25,8 +26,8 @@
     box-shadow: 0 0 5svh rgb(255, 255, 255);
 }
 
-.letsgo_button:active {
-    animation: letsgo_button_press 1s infinite;
+.letsgo_button:focus {
+    animation: letsgo_button_press 0.4s forwards;
 }
 
 @keyframes letsgo_button_press {
