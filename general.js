@@ -1,6 +1,5 @@
 function goto(page) {
     if (location.hostname != '') {
-        alert("totsiy");
         if (page.split('.')[0] == 'index') {
             page = "/";
         }
