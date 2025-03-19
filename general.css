@@ -9,6 +9,25 @@ body {
     transition: all 0.2s ease-in-out;
 }
 
+.square_bg {
+    position: fixed;
+    aspect-ratio: 1/1;
+    width: 80%;
+    border: #fff solid 2svh;
+    border-radius: 40%;
+    z-index: -1;
+    animation: square_bg_anim 30s infinite linear;
+    box-shadow: 0 0 5svh rgb(255, 255, 255);
+}
+
+@keyframes square_bg_anim {
+    from {
+        rotate: 0deg;
+    } to {
+        rotate: 360deg;
+    }
+}
+
 .ar9_16 {
     height: 100vh;
     display: flex;
@@ -122,4 +141,38 @@ p {
 
 #openNav:hover {
     background: #005f73;
+}
+
+.filler {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.navigation_button {
+    background-color: transparent;
+    border-radius: 1svh;
+    border: none;
+    outline: none;
+    color: #fff;
+    cursor: pointer;
+    padding: 1vh;
+    text-decoration: none;
+    font-size: 4svh;
+    transition: all 0.2s ease-in-out;
+}
+
+.navigation_button:hover {
+    background-color: rgba(0, 0, 0, 0.2);
+}
+
+.navigation_panel {
+    height: 5vh;
+    background-color: rgb(0, 0, 0, 0.5);
+    border-radius: 1svh;
+    padding: 1svh;
+    margin: 0;
+    display: flex;
+    align-items: center;
 }

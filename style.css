@@ -5,36 +5,34 @@
     padding: 1svh;
 }
 
-.filler {
-    flex: 1;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-
-.navigation_button {
-    background-color: transparent;
-    border-radius: 1svh;
-    border: none;
-    outline: none;
-    color: #fff;
-    cursor: pointer;
-    padding: 1vh;
-    text-decoration: none;
-    font-size: 4svh;
-    transition: all 0.2s ease-in-out;
-}
-
-.navigation_button:hover {
-    background-color: rgba(0, 0, 0, 0.2);
-}
-
-.navigation_panel {
-    height: 5vh;
+.letsgo_button {
+    width: 100%;
+    aspect-ratio: 5/1;
+    margin: 2svh;
+    border: #fff solid 0.8svh;
+    border-radius: 2svh;
     background-color: rgb(0, 0, 0, 0.5);
-    border-radius: 1svh;
-    padding: 1svh;
-    margin: 0;
-    display: flex;
-    align-items: center;
+    color: #fff;
+    font-family: 'Baloo 2';
+    font-weight: 900;
+    font-size: 5svh;
+    transition: all 0.25s ease-in-out;
+    filter: none;
+}
+
+.letsgo_button:hover {
+    scale: 1.1;
+    box-shadow: 0 0 5svh rgb(255, 255, 255);
+}
+
+.letsgo_button:active {
+    animation: letsgo_button_press 1s infinite;
+}
+
+@keyframes letsgo_button_press {
+    from {
+        rotate: 0deg;
+    } to {
+        rotate: 360deg;
+    }
 }

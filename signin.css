@@ -1,27 +1,20 @@
 body {
-    background: linear-gradient(135deg, #12c2e9, #c471ed, #f64f59);
-    height: 100vh;
-    margin: 0;
-    background-attachment: fixed;
     overflow: hidden;
-    font-family: 'Baloo 2';
-    color: #fff;
-    transition: all 0.2s ease-in-out;
 }
 
 input {
-    border: 0.4svh solid #12c2e9;
+    border: 0.4svh solid #ffffff;
+    background-color: rgb(0, 0, 0, 0.5);
     border-radius: 1svh;
     width: 25svh;
     height: 2svh;
-    color: #12c2e9;
+    color: #fff;
     font-weight: 900;
     font-size: 2vh;
     font-family: 'Baloo 2';
     padding: 0.2svh;
     padding-left: 0.5svh;
     padding-right: 0.5svh;
-    color: #12c2e9;
 }
 
 label {
@@ -29,31 +22,28 @@ label {
     font-size: 4svh;
 }
 
-button {
-    color: #12c2e9;
-    background-color: rgb(0, 0, 0,);
-    border: 0.4svh solid #12c2e9;
+.signin_button {
+    color: #fff;
+    background-color: rgb(0, 0, 0, 0.5);
+    border: 0.4svh solid #fff;
     border-radius: 1svh;
     font-family: 'Baloo 2';
     transition: all 0.2s ease-in-out;
     cursor: pointer;
-}
-
-button:hover {
-    filter: brightness(1.1);
-    scale: 1.1;
-}
-
-button:active {
-    rotate: 15deg;
-}
-
-.signin_button {
     margin-top: 2svh;
     width: 10svh;
     height: 5svh;
     font-size: 2svh;
     font-weight: 600;
+}
+
+.signin_button:hover {
+    filter: brightness(1.1);
+    scale: 1.1;
+}
+
+.signin_button:active {
+    rotate: 15deg;
 }
 
 .content {
