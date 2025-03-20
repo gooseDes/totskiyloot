@@ -1,10 +1,11 @@
 function goto(page) {
+    document.body.classList.add("fade_down");
     if (location.hostname != '') {
         if (page.split('.')[0] == 'index') {
-            page = "/";
+            setTimeout(function() { window.location.href = "/" }, 350);
+            return;
         }
     }
-    document.body.classList.add("fade_down");
     let appendix = ".html"
     if (page.split(".").length > 1 && page.split(".")[1] == ".html") {
         appendix = ""; 
@@ -33,7 +34,10 @@ window.addEventListener('load', function() {
             document.getElementById("sideNav").style.width = "0";
             document.getElementById("content").style.filter = "";
         });
-    } catch (e) {}
+        document.getElementById("userButton").addEventListener("click", function() {
+            goto('signin');
+        });
+    } catch (e) {this.alert(e)}
 
     setInterval(function() {
         var ars = document.querySelectorAll(".ar9_16");

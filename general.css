@@ -13,12 +13,17 @@ body {
 .square_bg {
     position: fixed;
     aspect-ratio: 1/1;
-    width: 80%;
     border: #fff solid 2svh;
     border-radius: 40%;
     z-index: -1;
     animation: square_bg_anim 30s infinite linear;
     box-shadow: 0 0 5svh rgb(255, 255, 255);
+    @media (orientation: portrait) {
+        width: 80%;
+    }
+    @media (orientation: landscape) {
+        height: 80%;
+    }
 }
 
 @keyframes square_bg_anim {
@@ -76,6 +81,10 @@ p {
     background-color: rgb(0, 0, 0, 0.5);
     border-radius: 2svh;
     padding: 2svh;
+}
+
+a:hover {
+    cursor: pointer;
 }
 
 .fullwidth_img {
@@ -205,4 +214,27 @@ p {
     margin: 0;
     display: flex;
     align-items: center;
+}
+
+::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #3498db;
+    border-radius: 4px;
+    transition: all 0.2s ease-in-out;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #2980b9;
+}
+
+::-webkit-scrollbar-track {
+    background: #fff;
+}
+
+::-webkit-scrollbar-corner {
+    background: #fff
 }
