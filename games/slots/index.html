@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>TL - Home</title>
     <link rel="stylesheet" href="../../general.css">
+    <link rel="stylesheet" href="style.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400..800&display=swap" rel="stylesheet">
@@ -12,15 +13,17 @@
 </head>
 <body>
     <script src="../../general.js"></script>
+    <script src="script.js"></script>
     <div class="content" id="content">
-        <div class="navigation_panel">
-            <button class="navigation_button" id="navButton"><i class="fa-solid fa-bars"></i></button>
-            <div class="filler"></div>
-            <button class="navigation_button" id="userButton"><i class="fa-solid fa-user"></i></button>
-        </div>
+        <button id="exitButton">&times</button>
+        <div id="machineScreen"></div>
+        <div id="slot1" class="slot">1</div>
+        <div id="slot2" class="slot">2</div>
+        <div id="slot3" class="slot">3</div>
+        <div id="machineTopPanel"></div>
+        <div id="machineBottomPanel"></div>
+        <button id="spinButton"><i class="fa-solid fa-rotate"></i></button>
     </div>
-
-    <p>Slots</p>
 
     <div id="sideNav" class="side_nav">
         <button id="closeNav" class="close_btn">&times;</button>

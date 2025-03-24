@@ -6,11 +6,7 @@ function goto(page) {
             return;
         }
     }
-    let appendix = ".html"
-    if (page.split(".").length > 1 && page.split(".")[1] == ".html") {
-        appendix = ""; 
-    }
-    setTimeout(function() { window.location.href = page + appendix }, 350);
+    setTimeout(function() { window.location.href = page }, 350);
 }
 
 window.addEventListener('load', function() {
@@ -37,7 +33,7 @@ window.addEventListener('load', function() {
         document.getElementById("userButton").addEventListener("click", function() {
             goto('signin');
         });
-    } catch (e) {this.alert(e)}
+    } catch (e) {}
 
     setInterval(function() {
         var ars = document.querySelectorAll(".ar9_16");
