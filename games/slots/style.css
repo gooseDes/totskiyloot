@@ -124,3 +124,8 @@ button:hover {
 #slot3 {
     left: 64vw;
 }
+
+img {
+    width: 100%;
+    height: auto
+}
