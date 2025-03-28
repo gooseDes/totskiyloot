@@ -12,12 +12,14 @@ button:hover {
 }
 
 #exitButton {
+    position: absolute;
+    left: 1vw;
+    top: 1vw;
     background-color: rgb(0, 0, 0, 0.5);
     border: none;
     color: white;
-    font-size: 7vw;
-    width: 8vw;
-    height: 8vw;
+    font-size: 450%;
+    width: 15%;
     aspect-ratio: 1/1;
     border-radius: 2vw;
 }
@@ -26,14 +28,13 @@ button:hover {
     background-color: rgb(0, 0, 0, 0.5);
     position: absolute;
     right: 2vw;
-    top: 100vw;
-    width: 10vw;
-    height: 10vw;
+    bottom: 5vh;
+    width: 20%;
     aspect-ratio: 1/1;
     border-radius: 2vw;
     border: none;
     color: #fff;
-    font-size: 5vw;
+    font-size: 400%;
 }
 
 .spinning {
@@ -57,57 +58,68 @@ button:hover {
     }
 }
 
-#machineTopPanel {
+#machineTopPanel, #machineBottomPanel {
     background-color: #df0808;
-    box-shadow: inset 0 0 0 1vw black;
+    box-shadow: inset 0 0 0 10px black;
     border-radius: 2vw;
+    width: 95%;
+    height: 10%;
     position: absolute;
-    left: 5vw;
-    width: 90vw;
-    height: 15vw;
-    top: 15vw;
+    left: 5%;
+}
+
+#machineTopPanel {
+    top: 10%;
 }
 
 #machineBottomPanel {
-    background-color: #df0808;
-    box-shadow: inset 0 0 0 1vw black;
-    border-radius: 2vw;
-    position: absolute;
-    left: 5vw;
-    width: 90vw;
-    height: 15vw;
-    top: 70vw;
+    bottom: 45%;
 }
 
 #machineScreen {
-    background-color: rgb(0, 0, 0, 0.5);
-    box-shadow: inset 0 0 0 2vw #df0808;
+    background-color: rgba(0, 0, 0, 0.5);
+    box-shadow: inset 0 0 0 12px #df0808;
     border-radius: 2vw;
+    width: 80%;
+    height: 23.5%;
     position: absolute;
-    left: 7vw;
-    width: 84vw;
-    height: 42vw;
-    top: 28vw;
-    border: 1vw #000 solid;
+    left: 7%;
+    top: 17%;
+    border: 10px #000 solid;
     color: #fff;
     text-align: center;
     display: flex;
     justify-content: center;
     align-items: center;
+    flex-direction: row;
+    padding: 3svh;
+    padding-left: 2svh;
+    padding-right: 2svh;
+    gap: 0.5svh;
 }
 
 .slot_div {
-    position: absolute;
     display: flex;
     justify-content: center;
     align-items: center;
-    width: 25vw;
-    height: 36vw;
-    top: 32vw;
+    height: 100%;
+    width: 100%;
+}
+
+#slot1 {
+    left: 10%;
+}
+
+#slot2 {
+    left: 35%;
+}
+
+#slot3 {
+    left: 60%;
 }
 
 .slot {
-    background-color: rgb(0, 0, 0, 0.8);
+    background-color: rgba(0, 0, 0, 0.8);
     border-radius: 2vw;
     width: 100%;
     height: 100%;
@@ -115,21 +127,9 @@ button:hover {
     display: flex;
     justify-content: center;
     align-items: center;
-    font-size: 40vw;
+    font-size: 20svh;
     transition: all 0.3s cubic-bezier(0.25, 1.5, 0.5, 1);
     overflow: hidden;
-}
-
-#slot1 {
-    left: 11vw;
-}
-
-#slot2 {
-    left: 37.5vw;
-}
-
-#slot3 {
-    left: 64vw;
 }
 
 img {
@@ -140,4 +140,33 @@ img {
 
 .ar9_16 {
     position: relative;
+}
+
+html, body {
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.content {
+    width: 56.25vh;
+    height: 100vh;
+    max-width: 100vw;
+    max-height: 177.78vw;
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.money_counter {
+    position: absolute;
+    top: 1vw;
+    right: 1vw;
+    height: 8%;
 }
