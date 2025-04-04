@@ -13,13 +13,9 @@
 </head>
 <body>
     <script src="../../general.js"></script>
-    <script src="script.js"></script>
     <div class="content" id="content">
         <button id="exitButton">&times</button>
-        <div id="game">
-            <div id="ball"></div>
-            <div class="collision" style="width: 50%; height: 1%; top: 75%; left: 50%;"></div>
-        </div>
+        <canvas id="gameCanvas"></canvas>
     </div>
 
     <div id="sideNav" class="side_nav">
@@ -28,5 +24,7 @@
         <a onclick="goto('games')">Games</a>
         <a onclick="goto('contact')">Contact</a>
     </div>
+
+    <script src="script.js"></script>
 </body>
 </html>
