@@ -1,5 +1,3 @@
-var top = 0;
-
 window.addEventListener("load", function() {
     document.getElementById('exitButton').addEventListener("click", function() {
         goto('/games');
