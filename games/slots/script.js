@@ -17,6 +17,14 @@ window.addEventListener("load", function() {
                         slot.innerHTML = Math.round(Math.random()*9);
                         slot.style.height = '100%';
                         slot.style.width = '100%';
+                        if (i >= 19) {
+                            setTimeout(function() {
+                                document.getElementById('content').classList.add('break');
+                                setTimeout(function() {
+                                    alert('U lost ur kidneys');
+                                }, 2800);
+                            }, 1000);
+                        }
                     }, i*21);
                 }, i*(i*21));
             }

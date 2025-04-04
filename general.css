@@ -258,3 +258,28 @@ a:hover {
         font-size: 4svh;
     }
 }
+
+.break {
+    animation: break 3s ease forwards;
+}
+
+@keyframes break {
+    from {
+        opacity: 1;
+        transform: translateY(0);
+        rotate: 0deg;
+    }
+    10% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+    40% {
+        transform: translateY(-50%);
+        rotate: 0deg;
+    }
+    to {
+        transform: translateY(200%);
+        opacity: 0.8;
+        rotate: 45deg;
+    }
+}
