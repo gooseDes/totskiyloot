@@ -4,9 +4,10 @@ const { GLTFLoader } = await import('https://esm.sh/three@0.175.0/examples/jsm/l
 const scene = new THREE.Scene();
 scene.background = new THREE.Color(0x222244);
 
-const camera = new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHeight, 0.1, 1000);
+const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
 camera.position.z = 5;
 let player_speed_y = 0;
+const jumpForce = 0.2;
 
 const renderer = new THREE.WebGLRenderer();
 renderer.setSize(window.innerWidth, window.innerHeight);
@@ -28,6 +29,7 @@ pointLight.position.set(5, 5, 5);
 scene.add(pointLight);
 
 const joystickZone = document.getElementById('joystick-zone');
+const jumpButton = document.getElementById('jump-button');
 let joystick;
 let moveDirection = { x: 0, y: 0 };
 let isTouching = false;
@@ -35,6 +37,10 @@ let touchStartX = 0, touchStartY = 0;
 
 let keyState = { w: false, a: false, s: false, d: false, space: false };
 let jumpState = false;
+
+const rotationQuaternion = new THREE.Quaternion();
+let yaw = 0;
+let pitch = 0;
 
 function enableMobileControls() {
   console.log("📱 Mobile controls enabled");
@@ -46,27 +52,49 @@ function enableMobileControls() {
     color: 'white',
   });
 
+  jumpButton.style.visibility = 'visible';
+
+  jumpButton.addEventListener('click', function() {
+    player_speed_y = jumpForce;
+  });
+
+  let isJoystickActive = false;
+
+  joystick.on('start', (evt, data) => {
+    isJoystickActive = true;
+  });
+
   joystick.on('move', (evt, data) => {
     const angle = data.angle.degree;
     const force = data.force;
     const rad = angle * (Math.PI / 180);
-    moveDirection.x = Math.cos(rad) * force;
-    moveDirection.y = Math.sin(rad) * force;
+
+    const moveX = Math.cos(rad) * force;
+    const moveY = Math.sin(rad) * force;
+
+    moveDirection.x = moveX * Math.cos(yaw) - moveY * Math.sin(yaw);
+    moveDirection.y = moveX * Math.sin(yaw) + moveY * Math.cos(yaw);
   });
 
   joystick.on('end', () => {
+    isJoystickActive = false;
     moveDirection.x = 0;
     moveDirection.y = 0;
   });
 
   window.addEventListener('touchstart', handleTouchStart);
   window.addEventListener('touchmove', handleTouchMove);
-  window.addEventListener('touchend', () => { isTouching = false; });
+  window.addEventListener('touchend', () => { 
+    isTouching = false; 
+  });
 }
+
 
 function handleTouchStart(e) {
   const touch = e.touches[0];
-  if (!joystickZone.contains(touch.target)) {
+  if (joystickZone.contains(touch.target) || jumpButton.contains(touch.target)) {
+    isTouching = true;
+  } else {
     isTouching = true;
     touchStartX = touch.clientX;
     touchStartY = touch.clientY;
@@ -75,17 +103,21 @@ function handleTouchStart(e) {
 
 function handleTouchMove(e) {
   if (!isTouching) return;
+
   const touch = e.touches[0];
   const deltaX = touch.clientX - touchStartX;
   const deltaY = touch.clientY - touchStartY;
 
   const sensitivity = 0.005;
-  camera.rotation.y -= deltaX * sensitivity;
-  camera.rotation.x -= deltaY * sensitivity;
 
-  const maxPitch = Math.PI / 2 - 0.1;
-  const minPitch = -Math.PI / 2 + 0.1;
-  camera.rotation.x = Math.max(minPitch, Math.min(maxPitch, camera.rotation.x));
+  if (!(joystickZone.contains(touch.target) || jumpButton.contains(touch.target))) {
+    camera.rotation.y -= deltaX * sensitivity;
+    camera.rotation.x -= deltaY * sensitivity;
+
+    const maxPitch = Math.PI / 2 - 0.1;
+    const minPitch = -Math.PI / 2 + 0.1;
+    camera.rotation.x = Math.max(minPitch, Math.min(maxPitch, camera.rotation.x));
+  }
 
   touchStartX = touch.clientX;
   touchStartY = touch.clientY;
@@ -110,16 +142,40 @@ function enableDesktopControls() {
 
   function handleMouseMove(event) {
     const sensitivity = 0.002;
-    camera.rotation.y -= event.movementX * sensitivity;
-    camera.rotation.x -= event.movementY * sensitivity;
+    yaw -= event.movementX * sensitivity;
+    pitch -= event.movementY * sensitivity;
 
     const maxPitch = Math.PI / 2 - 0.1;
     const minPitch = -Math.PI / 2 + 0.1;
-    camera.rotation.x = Math.max(minPitch, Math.min(maxPitch, camera.rotation.x));
+    pitch = Math.max(minPitch, Math.min(maxPitch, pitch));
+
+    const quaternion = new THREE.Quaternion();
+    quaternion.setFromEuler(new THREE.Euler(pitch, yaw, 0, 'YXZ'));
+
+    camera.quaternion.copy(quaternion);
   }
 
-  window.addEventListener('keydown', (e) => {if (e.key != " ") {keyState[e.key.toLowerCase()] = true} else {keyState.space = true}});
-  window.addEventListener('keyup', (e) => {if (e.key != " ") {keyState[e.key.toLowerCase()] = false} else {keyState.space = false; jumpState = false}});
+  window.addEventListener('keydown', (e) => {
+    switch (e.code) {
+      case 'KeyW': keyState.w = true; break;
+      case 'KeyA': keyState.a = true; break;
+      case 'KeyS': keyState.s = true; break;
+      case 'KeyD': keyState.d = true; break;
+      case 'Space': keyState.space = true; break;
+      default: break;
+    }
+  });
+
+  window.addEventListener('keyup', (e) => {
+    switch (e.code) {
+      case 'KeyW': keyState.w = false; break;
+      case 'KeyA': keyState.a = false; break;
+      case 'KeyS': keyState.s = false; break;
+      case 'KeyD': keyState.d = false; break;
+      case 'Space': keyState.space = false; jumpState = false; break;
+      default: break;
+    }
+  });
 }
 
 const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
@@ -132,35 +188,47 @@ if (isTouchDevice) {
 function update() {
   requestAnimationFrame(update);
 
+  player_speed_y -= 0.0098;
+
+  camera.position.y += player_speed_y;
+    
+  if (camera.position.y <= 0) {
+    player_speed_y = 0;
+    camera.position.y = 0;
+  }
+
   if (!isTouchDevice) {
     const moveSpeed = 0.1;
 
-    player_speed_y -= 0.0098
-  
-    if (keyState.w) camera.position.z -= moveSpeed;
-    if (keyState.s) camera.position.z += moveSpeed;
-    if (keyState.a) camera.position.x -= moveSpeed;
-    if (keyState.d) camera.position.x += moveSpeed;
+    if (keyState.w) {
+      camera.position.x -= Math.sin(yaw) * moveSpeed;
+      camera.position.z -= Math.cos(yaw) * moveSpeed;
+    }
+    if (keyState.s) {
+      camera.position.x += Math.sin(yaw) * moveSpeed;
+      camera.position.z += Math.cos(yaw) * moveSpeed;
+    }
+    if (keyState.a) {
+      camera.position.x -= Math.cos(yaw) * moveSpeed;
+      camera.position.z += Math.sin(yaw) * moveSpeed;
+    }
+    if (keyState.d) {
+      camera.position.x += Math.cos(yaw) * moveSpeed;
+      camera.position.z -= Math.sin(yaw) * moveSpeed;
+    }
     if (keyState.space && !jumpState) {
       jumpState = true;
-      const jumpForce = 0.2;
       player_speed_y = jumpForce;
-    }
-
-    camera.position.y += player_speed_y;
-    if (camera.position.y <= 0) {
-      player_speed_y = 0;
-      camera.position.y = 0;
     }
   }
 
   if (isTouchDevice && (moveDirection.x !== 0 || moveDirection.y !== 0)) {
     const move = new THREE.Vector3(moveDirection.x, 0, -moveDirection.y)
       .normalize()
-      .applyEuler(camera.rotation)
+      .applyEuler(new THREE.Euler(0, yaw, 0))
       .multiplyScalar(0.1);
     camera.position.add(move);
-  }  
+  }
 
   renderer.render(scene, camera);
 }
