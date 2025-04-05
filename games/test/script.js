@@ -42,6 +42,24 @@ const rotationQuaternion = new THREE.Quaternion();
 let yaw = 0;
 let pitch = 0;
 
+window.addEventListener('click', () => {
+  if (document.documentElement.requestFullscreen) {
+    document.documentElement.requestFullscreen();
+  } else if (document.documentElement.mozRequestFullScreen) { // Firefox
+      document.documentElement.mozRequestFullScreen();
+  } else if (document.documentElement.webkitRequestFullscreen) { // Chrome, Safari and Opera
+      document.documentElement.webkitRequestFullscreen();
+  } else if (document.documentElement.msRequestFullscreen) { // IE/Edge
+      document.documentElement.msRequestFullscreen();
+  }
+});
+
+window.addEventListener('resize', () => {
+  camera.aspect = window.innerWidth / window.innerHeight;
+  camera.updateProjectionMatrix();
+  renderer.setSize(window.innerWidth, window.innerHeight);
+});
+
 function enableMobileControls() {
   console.log("📱 Mobile controls enabled");
 
@@ -54,7 +72,7 @@ function enableMobileControls() {
 
   jumpButton.style.visibility = 'visible';
 
-  jumpButton.addEventListener('click', function() {
+  jumpButton.addEventListener('hover', function() {
     player_speed_y = jumpForce;
   });
 
