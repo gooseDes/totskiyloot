@@ -6,6 +6,7 @@ scene.background = new THREE.Color(0x222244);
 
 const camera = new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHeight, 0.1, 1000);
 camera.position.z = 5;
+let player_speed_y = 0;
 
 const renderer = new THREE.WebGLRenderer();
 renderer.setSize(window.innerWidth, window.innerHeight);
@@ -32,7 +33,8 @@ let moveDirection = { x: 0, y: 0 };
 let isTouching = false;
 let touchStartX = 0, touchStartY = 0;
 
-let keyState = { w: false, a: false, s: false, d: false };
+let keyState = { w: false, a: false, s: false, d: false, space: false };
+let jumpState = false;
 
 function enableMobileControls() {
   console.log("📱 Mobile controls enabled");
@@ -116,8 +118,8 @@ function enableDesktopControls() {
     camera.rotation.x = Math.max(minPitch, Math.min(maxPitch, camera.rotation.x));
   }
 
-  window.addEventListener('keydown', (e) => keyState[e.key.toLowerCase()] = true);
-  window.addEventListener('keyup', (e) => keyState[e.key.toLowerCase()] = false);
+  window.addEventListener('keydown', (e) => {if (e.key != " ") {keyState[e.key.toLowerCase()] = true} else {keyState.space = true}});
+  window.addEventListener('keyup', (e) => {if (e.key != " ") {keyState[e.key.toLowerCase()] = false} else {keyState.space = false; jumpState = false}});
 }
 
 const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
@@ -132,20 +134,24 @@ function update() {
 
   if (!isTouchDevice) {
     const moveSpeed = 0.1;
-    const direction = new THREE.Vector3();
 
-    if (keyState.w) direction.z -= 1;
-    if (keyState.s) direction.z += 1;
-    if (keyState.a) direction.x -= 1;
-    if (keyState.d) direction.x += 1;
-
-    if (direction.length() > 0) {
-      direction.normalize();
-
-      const move = direction.clone().applyEuler(camera.rotation).multiplyScalar(moveSpeed);
-      camera.position.add(move);
+    player_speed_y -= 0.0098
+  
+    if (keyState.w) camera.position.z -= moveSpeed;
+    if (keyState.s) camera.position.z += moveSpeed;
+    if (keyState.a) camera.position.x -= moveSpeed;
+    if (keyState.d) camera.position.x += moveSpeed;
+    if (keyState.space && !jumpState) {
+      jumpState = true;
+      const jumpForce = 0.2;
+      player_speed_y = jumpForce;
     }
 
+    camera.position.y += player_speed_y;
+    if (camera.position.y <= 0) {
+      player_speed_y = 0;
+      camera.position.y = 0;
+    }
   }
 
   if (isTouchDevice && (moveDirection.x !== 0 || moveDirection.y !== 0)) {
