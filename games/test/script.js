@@ -129,12 +129,16 @@ function handleTouchMove(e) {
   const sensitivity = 0.005;
 
   if (!(joystickZone.contains(touch.target) || jumpButton.contains(touch.target))) {
-    camera.rotation.y -= deltaX * sensitivity;
-    camera.rotation.x -= deltaY * sensitivity;
+    yaw -= deltaX * sensitivity;
+    pitch -= deltaY * sensitivity;
 
     const maxPitch = Math.PI / 2 - 0.1;
     const minPitch = -Math.PI / 2 + 0.1;
-    camera.rotation.x = Math.max(minPitch, Math.min(maxPitch, camera.rotation.x));
+    pitch = Math.max(minPitch, Math.min(maxPitch, pitch));
+
+    const quaternion = new THREE.Quaternion();
+    quaternion.setFromEuler(new THREE.Euler(pitch, yaw, 0, 'YXZ'));
+    camera.quaternion.copy(quaternion);
   }
 
   touchStartX = touch.clientX;
