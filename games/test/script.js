@@ -16,17 +16,18 @@ document.body.appendChild(renderer.domElement);
 const loader = new GLTFLoader();
 var car = null;
 
-loader.load('models/car/scene.gltf', (gltf) => {
-  car = gltf.scene;
+loader.load('models/menu_scene.glb', (gltf) => {
+  gltf.scene.position.set(0, -2, 0)
   scene.add(gltf.scene);
 });
 
-const ambientLight = new THREE.AmbientLight(0xffffff, 0.7);
+const ambientLight = new THREE.AmbientLight(0xffffff, 0.1);
 scene.add(ambientLight);
 
-const pointLight = new THREE.PointLight(0xffffff, 2);
-pointLight.position.set(5, 5, 5);
+const pointLight = new THREE.SpotLight(0xffffff, 10, 1000, Math.PI / 4, 0.1, 2);
+pointLight.target.position.set(0, 0, -1);
 scene.add(pointLight);
+scene.add(pointLight.target)
 
 const joystickZone = document.getElementById('joystick-zone');
 const jumpButton = document.getElementById('jump-button');
@@ -72,7 +73,7 @@ function enableMobileControls() {
 
   jumpButton.style.visibility = 'visible';
 
-  jumpButton.addEventListener('hover', function() {
+  jumpButton.addEventListener('click', function() {
     player_speed_y = jumpForce;
   });
 
@@ -90,8 +91,9 @@ function enableMobileControls() {
     const moveX = Math.cos(rad) * force;
     const moveY = Math.sin(rad) * force;
 
-    moveDirection.x = moveX * Math.cos(yaw) - moveY * Math.sin(yaw);
-    moveDirection.y = moveX * Math.sin(yaw) + moveY * Math.cos(yaw);
+    moveDirection.x = moveX;
+    moveDirection.y = moveY;
+
   });
 
   joystick.on('end', () => {
@@ -213,6 +215,8 @@ function update() {
   player_speed_y -= 0.0098;
 
   camera.position.y += player_speed_y;
+  pointLight.position.copy(camera.position);
+  pointLight.target.position.copy(camera.getWorldDirection(new THREE.Vector3()).add(camera.position));  
     
   if (camera.position.y <= 0) {
     player_speed_y = 0;
