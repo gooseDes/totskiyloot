@@ -8,7 +8,6 @@ const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerH
 camera.position.z = 5;
 let player_speed_y = 0;
 const jumpForce = 0.2;
-let lookTouchId = null;
 
 const renderer = new THREE.WebGLRenderer();
 renderer.setSize(window.innerWidth, window.innerHeight);
@@ -70,6 +69,8 @@ function enableMobileControls() {
     mode: 'static',
     position: { left: '2svh', bottom: '2svh' },
     color: 'white',
+    multitouch: true,
+    restOpacity: 0.5
   });
 
   jumpButton.style.visibility = 'visible';
@@ -115,25 +116,29 @@ function enableMobileControls() {
 }
 
 
+let lookTouchId = null;
+let lastLookX = 0;
+let lastLookY = 0;
+
 function handleTouchStart(e) {
   for (let i = 0; i < e.touches.length; i++) {
     const touch = e.touches[i];
     if (!joystickZone.contains(touch.target) && !jumpButton.contains(touch.target)) {
       lookTouchId = touch.identifier;
-      touchStartX = touch.clientX;
-      touchStartY = touch.clientY;
+      lastLookX = touch.clientX;
+      lastLookY = touch.clientY;
     }
   }
 }
 
-function handleTouchMove(e) {
-  if (lookTouchId === null) return;
 
+function handleTouchMove(e) {
   for (let i = 0; i < e.touches.length; i++) {
     const touch = e.touches[i];
+
     if (touch.identifier === lookTouchId) {
-      const deltaX = touch.clientX - touchStartX;
-      const deltaY = touch.clientY - touchStartY;
+      const deltaX = touch.clientX - lastLookX;
+      const deltaY = touch.clientY - lastLookY;
 
       const sensitivity = 0.005;
       yaw -= deltaX * sensitivity;
@@ -147,11 +152,12 @@ function handleTouchMove(e) {
       quaternion.setFromEuler(new THREE.Euler(pitch, yaw, 0, 'YXZ'));
       camera.quaternion.copy(quaternion);
 
-      touchStartX = touch.clientX;
-      touchStartY = touch.clientY;
+      lastLookX = touch.clientX;
+      lastLookY = touch.clientY;
     }
   }
 }
+
 
 function enableDesktopControls() {
   console.log("💻 Desktop controls enabled");
