@@ -8,6 +8,7 @@ const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerH
 camera.position.z = 5;
 let player_speed_y = 0;
 const jumpForce = 0.2;
+let lookTouchId = null;
 
 const renderer = new THREE.WebGLRenderer();
 renderer.setSize(window.innerWidth, window.innerHeight);
@@ -104,47 +105,52 @@ function enableMobileControls() {
 
   window.addEventListener('touchstart', handleTouchStart);
   window.addEventListener('touchmove', handleTouchMove);
-  window.addEventListener('touchend', () => { 
-    isTouching = false; 
+  window.addEventListener('touchend', (e) => { 
+    for (let i = 0; i < e.changedTouches.length; i++) {
+      if (e.changedTouches[i].identifier === lookTouchId) {
+        lookTouchId = null;
+      }
+    }
   });
 }
 
 
 function handleTouchStart(e) {
-  const touch = e.touches[0];
-  if (joystickZone.contains(touch.target) || jumpButton.contains(touch.target)) {
-    isTouching = true;
-  } else {
-    isTouching = true;
-    touchStartX = touch.clientX;
-    touchStartY = touch.clientY;
+  for (let i = 0; i < e.touches.length; i++) {
+    const touch = e.touches[i];
+    if (!joystickZone.contains(touch.target) && !jumpButton.contains(touch.target)) {
+      lookTouchId = touch.identifier;
+      touchStartX = touch.clientX;
+      touchStartY = touch.clientY;
+    }
   }
 }
 
 function handleTouchMove(e) {
-  if (!isTouching) return;
+  if (lookTouchId === null) return;
 
-  const touch = e.touches[0];
-  const deltaX = touch.clientX - touchStartX;
-  const deltaY = touch.clientY - touchStartY;
+  for (let i = 0; i < e.touches.length; i++) {
+    const touch = e.touches[i];
+    if (touch.identifier === lookTouchId) {
+      const deltaX = touch.clientX - touchStartX;
+      const deltaY = touch.clientY - touchStartY;
 
-  const sensitivity = 0.005;
+      const sensitivity = 0.005;
+      yaw -= deltaX * sensitivity;
+      pitch -= deltaY * sensitivity;
 
-  if (!(joystickZone.contains(touch.target) || jumpButton.contains(touch.target))) {
-    yaw -= deltaX * sensitivity;
-    pitch -= deltaY * sensitivity;
+      const maxPitch = Math.PI / 2 - 0.1;
+      const minPitch = -Math.PI / 2 + 0.1;
+      pitch = Math.max(minPitch, Math.min(maxPitch, pitch));
 
-    const maxPitch = Math.PI / 2 - 0.1;
-    const minPitch = -Math.PI / 2 + 0.1;
-    pitch = Math.max(minPitch, Math.min(maxPitch, pitch));
+      const quaternion = new THREE.Quaternion();
+      quaternion.setFromEuler(new THREE.Euler(pitch, yaw, 0, 'YXZ'));
+      camera.quaternion.copy(quaternion);
 
-    const quaternion = new THREE.Quaternion();
-    quaternion.setFromEuler(new THREE.Euler(pitch, yaw, 0, 'YXZ'));
-    camera.quaternion.copy(quaternion);
+      touchStartX = touch.clientX;
+      touchStartY = touch.clientY;
+    }
   }
-
-  touchStartX = touch.clientX;
-  touchStartY = touch.clientY;
 }
 
 function enableDesktopControls() {
