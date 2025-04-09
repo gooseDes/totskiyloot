@@ -1,11 +1,12 @@
 const THREE = await import('https://esm.sh/three@0.175.0');
 
 export class PlayerController {
-  constructor(camera, flashlight, scene, renderer) {
+  constructor(camera, flashlight, scene, renderer, collisionMeshes = []) {
     this.camera = camera;
     this.flashlight = flashlight;
     this.scene = scene;
     this.renderer = renderer;
+    this.collisionMeshes = collisionMeshes;
 
     this.joystickZone = document.getElementById('joystick-zone');
     this.jumpButton = document.getElementById('jump-button');
@@ -27,13 +28,12 @@ export class PlayerController {
     this.jumpForce = 0.2;
     this.speed_y = 0;
 
-    this.isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+    this.isTouchDevice = 'ontouchstart' in window;
 
-    if (this.isTouchDevice) {
-      this.enableMobileControls();
-    } else {
-      this.enableDesktopControls();
-    }
+    this.raycaster = new THREE.Raycaster();
+    this.collisionDistance = 0.5;
+
+    this.start();
 
     window.addEventListener('keydown', (e) => {
       switch (e.code) {
@@ -54,6 +54,22 @@ export class PlayerController {
         case 'Space': this.keyState.space = false; this.jumpState = false; break;
       }
     });
+  }
+
+  raycastCollisionCheck(direction) {
+    this.raycaster.set(this.camera.position, direction.clone().normalize());
+    const intersects = this.raycaster.intersectObjects(this.collisionMeshes, true);
+    if (intersects.length > 0 && intersects[0].distance < this.collisionDistance) {
+      return true;
+    }
+    return false;
+  }
+
+  tryMove(directionVec) {
+    const dir = directionVec.clone();
+    if (!this.raycastCollisionCheck(dir)) {
+      this.camera.position.add(dir);
+    }
   }
 
   enableMobileControls() {
@@ -139,7 +155,6 @@ export class PlayerController {
   handleTouchMove = (e) => {
     for (let i = 0; i < e.touches.length; i++) {
       const touch = e.touches[i];
-
       if (touch.identifier === this.lookTouchId) {
         const deltaX = touch.clientX - this.lastLookX;
         const deltaY = touch.clientY - this.lastLookY;
@@ -188,24 +203,24 @@ export class PlayerController {
       this.camera.position.y = 0;
     }
 
-    if (!this.isTouchDevice) {
-      const moveSpeed = 0.1;
+    const moveSpeed = 0.1;
 
+    if (!this.isTouchDevice) {
       if (this.keyState.w) {
-        this.camera.position.x -= Math.sin(this.yaw) * moveSpeed;
-        this.camera.position.z -= Math.cos(this.yaw) * moveSpeed;
+        const dir = new THREE.Vector3(-Math.sin(this.yaw), 0, -Math.cos(this.yaw)).multiplyScalar(moveSpeed);
+        this.tryMove(dir);
       }
       if (this.keyState.s) {
-        this.camera.position.x += Math.sin(this.yaw) * moveSpeed;
-        this.camera.position.z += Math.cos(this.yaw) * moveSpeed;
+        const dir = new THREE.Vector3(Math.sin(this.yaw), 0, Math.cos(this.yaw)).multiplyScalar(moveSpeed);
+        this.tryMove(dir);
       }
       if (this.keyState.a) {
-        this.camera.position.x -= Math.cos(this.yaw) * moveSpeed;
-        this.camera.position.z += Math.sin(this.yaw) * moveSpeed;
+        const dir = new THREE.Vector3(-Math.cos(this.yaw), 0, Math.sin(this.yaw)).multiplyScalar(moveSpeed);
+        this.tryMove(dir);
       }
       if (this.keyState.d) {
-        this.camera.position.x += Math.cos(this.yaw) * moveSpeed;
-        this.camera.position.z -= Math.sin(this.yaw) * moveSpeed;
+        const dir = new THREE.Vector3(Math.cos(this.yaw), 0, -Math.sin(this.yaw)).multiplyScalar(moveSpeed);
+        this.tryMove(dir);
       }
       if (this.keyState.space && !this.jumpState) {
         this.jumpState = true;
@@ -218,7 +233,15 @@ export class PlayerController {
         .normalize()
         .applyEuler(new THREE.Euler(0, this.yaw, 0))
         .multiplyScalar(0.1);
-      this.camera.position.add(move);
+      this.tryMove(move);
+    }
+  }
+
+  start() {
+    if (this.isTouchDevice) {
+      this.enableMobileControls();
+    } else {
+      this.enableDesktopControls();
     }
   }
 }

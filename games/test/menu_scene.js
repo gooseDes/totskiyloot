@@ -15,23 +15,35 @@ const ambientLight = new THREE.AmbientLight(0xffffff, 0.1);
 export const light = new THREE.SpotLight(0xffffff, 10, 1000, Math.PI, 0.1, 2);
 light.target.position.set(0, 0, 0);
 
+export var running = false;
+
 export function start() {
-    document.body.appendChild(renderer.domElement);
+  running = true;
+  document.body.appendChild(renderer.domElement);
 
-    loader.load('models/menu_scene.glb', (gltf) => {
-        gltf.scene.position.set(0, -2, 0)
-        scene.add(gltf.scene);
-    });
+  loader.load('models/menu_scene.glb', (gltf) => {
+      gltf.scene.position.set(0, -2, 0)
+      scene.add(gltf.scene);
+  });
 
-    scene.add(ambientLight);
-    scene.add(light);
-    scene.add(light.target)
+  scene.add(ambientLight);
+  scene.add(light);
+  scene.add(light.target);
 }
 
 export function update() {
     requestAnimationFrame(update);
     camera.rotation.y = Math.sin(performance.now()*0.000001)*360;
     light.intensity = Math.sin(performance.now()*0.001)*5+10;
+}
+
+export function render() {
+  renderer.render(scene, camera);
+}
+
+export function stop() {
+  running = false;
+  document.body.removeChild(renderer.domElement);
 }
 
 window.addEventListener('click', () => {
