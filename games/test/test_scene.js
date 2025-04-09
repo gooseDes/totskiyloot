@@ -46,10 +46,6 @@ export function start() {
           if (node.isMesh) {
               node.castShadow = true;
               node.receiveShadow = true;
-              if (node.material && node.material.isMeshStandardMaterial) {
-                  node.material.roughness = 1;
-                  node.material.metalness = 0.1;
-              }
           }
       });
 
