@@ -13,7 +13,7 @@ renderer.setSize(window.innerWidth, window.innerHeight);
 
 const loader = new GLTFLoader();
 
-const ambientLight = new THREE.AmbientLight(0xffffff, 0.05);
+const ambientLight = new THREE.AmbientLight(0xffffff, 0);
 export const flashlight = new THREE.SpotLight(0xffffff, 10, 1000, Math.PI / 4, 0.1, 2);
 flashlight.target.position.set(0, 0, -1);
 
