@@ -1,6 +1,12 @@
 const THREE = await import('https://esm.sh/three@0.175.0');
 const { GLTFLoader } = await import('https://esm.sh/three@0.175.0/examples/jsm/loaders/GLTFLoader.js');
+import * as CANNON from 'https://cdn.skypack.dev/cannon-es';
+
 import * as player_controller from "./player_controller.js";
+
+export const world = new CANNON.World({
+  gravity: new CANNON.Vec3(0, -9.82, 0)
+});
 
 export const scene = new THREE.Scene();
 scene.background = new THREE.Color(0x222244);
@@ -17,12 +23,13 @@ const ambientLight = new THREE.AmbientLight(0xffffff, 0.1);
 export const flashlight = new THREE.SpotLight(0xffffff, 10, 1000, Math.PI / 4, 0.1, 2);
 flashlight.target.position.set(0, 0, -1);
 
-export const player = new player_controller.PlayerController(camera, flashlight, scene, renderer, []);
+export const player = new player_controller.PlayerController(camera, flashlight, scene, renderer, world);
 
 export var running = false;
 
 export function update() {
-  player.update(1/60);
+  world.step(1 / 60);
+  player.update();
 }
 
 export function render() {
@@ -35,7 +42,7 @@ export function start() {
 
   loader.load('models/test_scene.glb', (gltf) => {
       gltf.scene.position.set(0, -2, 0)
-      player.collisionMeshes.push(gltf.scene);
+      player.addCollider(gltf.scene);
       scene.add(gltf.scene);
   });
 
