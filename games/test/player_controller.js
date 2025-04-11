@@ -14,19 +14,14 @@ export class PlayerController {
     this.joystick = null;
     this.moveDirection = { x: 0, y: 0 };
 
-    this.keyState = { w: false, a: false, s: false, d: false, space: false };
+    this.keyState = { keyw: false, keya: false, keys: false, keyd: false, space: false };
     this.jumpState = false;
 
     this.yaw = 0;
     this.pitch = 0;
 
-    this.lookTouchId = null;
-    this.lastLookX = 0;
-    this.lastLookY = 0;
-
-    this.jumpImpulse = 5;
-    this.moveSpeed = 5;
     this.isTouchDevice = 'ontouchstart' in window;
+    this.moveSpeed = 5;
 
     const radius = 0.3, height = 1.4;
     const sphereShape = new CANNON.Sphere(radius);
@@ -53,17 +48,18 @@ export class PlayerController {
   setupControls() {
     window.addEventListener('keydown', (e) => {
       const k = e.code;
-      if (k in this.keyState) this.keyState[k.toLowerCase()] = true;
+      if (k.toLocaleLowerCase() in this.keyState) this.keyState[k.toLowerCase()] = true;
     });
 
     window.addEventListener('keyup', (e) => {
       const k = e.code;
-      if (k in this.keyState) this.keyState[k.toLowerCase()] = false;
+      if (k.toLocaleLowerCase() in this.keyState) this.keyState[k.toLowerCase()] = false;
       if (k === 'Space') this.jumpState = false;
     });
   }
 
   enableMobileControls() {
+    console.log('Mobile controls enabled');
     this.joystick = nipplejs.create({
       zone: this.joystickZone,
       mode: 'static',
@@ -87,17 +83,10 @@ export class PlayerController {
       this.moveDirection.x = 0;
       this.moveDirection.y = 0;
     });
-
-    window.addEventListener('touchstart', this.handleTouchStart);
-    window.addEventListener('touchmove', this.handleTouchMove);
-    window.addEventListener('touchend', (e) => {
-      for (let t of e.changedTouches) {
-        if (t.identifier === this.lookTouchId) this.lookTouchId = null;
-      }
-    });
   }
 
   enableDesktopControls() {
+    console.log('Desktop controls enabled');
     const canvas = this.renderer.domElement;
     canvas.addEventListener('click', () => canvas.requestPointerLock());
 
@@ -108,31 +97,6 @@ export class PlayerController {
         document.removeEventListener('mousemove', this.handleMouseMove);
     });
   }
-
-  handleTouchStart = (e) => {
-    for (let t of e.touches) {
-      if (!this.joystickZone.contains(t.target) && !this.jumpButton.contains(t.target)) {
-        this.lookTouchId = t.identifier;
-        this.lastLookX = t.clientX;
-        this.lastLookY = t.clientY;
-      }
-    }
-  };
-
-  handleTouchMove = (e) => {
-    for (let t of e.touches) {
-      if (t.identifier === this.lookTouchId) {
-        const dx = t.clientX - this.lastLookX;
-        const dy = t.clientY - this.lastLookY;
-        const sens = 0.005;
-        this.yaw -= dx * sens;
-        this.pitch = Math.max(-Math.PI/2+0.1, Math.min(Math.PI/2-0.1, this.pitch - dy * sens));
-        this.lastLookX = t.clientX;
-        this.lastLookY = t.clientY;
-        this.updateCameraRotation();
-      }
-    }
-  };
 
   handleMouseMove = (e) => {
     const sens = 0.002;
@@ -147,58 +111,67 @@ export class PlayerController {
   }
 
   jump() {
-    if (this.isGrounded()) {
-      this.playerBody.velocity.y = this.jumpImpulse;
-      this.jumpState = true;
-    }
+    this.playerBody.velocity.y = 5;
+    this.jumpState = true;
   }
 
   isGrounded() {
-    const ray = new CANNON.Ray();
-    const from = this.playerBody.position.clone();
-    const to = from.clone();
-    to.y -= 1.0;
-    ray.from.copy(from);
-    ray.to.copy(to);
-    const result = new CANNON.RaycastResult();
-    ray.intersectWorld(this.world, { collisionFilterMask: -1, skipBackfaces: true }, result);
-    return result.hasHit;
-  }
+    const from = this.playerBody.position.clone(); // Player position
+    const to = new CANNON.Vec3(from.x, from.y - 10, from.z); // 1.1 units down to check below player
+    
+    const ray = new CANNON.Ray(from, to); // Create the ray from player position to just below the player
+    const result = new CANNON.RaycastResult(); // The result object to store intersection data
+  
+    // Raycasting to the world
+    ray.intersectWorld(this.world, result); // This will populate the result object
 
+    console.log(result.hasHit);
+  
+    // If we hit something, and it's not the player's body, then we consider the player grounded
+    if (result.hasHit && result.body !== this.playerBody) {
+      return true; // Player is grounded
+    }
+  
+    return false; // No ground hit
+  }
+  
   update() {
     const now = performance.now();
     const dt = (now - this.lastUpdateTime) / 1000;
     this.lastUpdateTime = now;
 
-    const velocity = new CANNON.Vec3();
-    const dir = new THREE.Vector3();
+    const input = this.getInputDirection();
 
-    if (!this.isTouchDevice) {
-      if (this.keyState.w) dir.z -= 1;
-      if (this.keyState.s) dir.z += 1;
-      if (this.keyState.a) dir.x -= 1;
-      if (this.keyState.d) dir.x += 1;
+    if (input.lengthSq() > 0) {
+      const cameraYawQuat = new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0, 1, 0), this.yaw);
+      input.applyQuaternion(cameraYawQuat).normalize();
 
-      dir.normalize().applyAxisAngle(new THREE.Vector3(0, 1, 0), this.yaw);
-      velocity.x = dir.x * this.moveSpeed;
-      velocity.z = dir.z * this.moveSpeed;
-
-      if (this.keyState.space) this.jump();
-    } else {
-      const move = new THREE.Vector3(this.moveDirection.x, 0, -this.moveDirection.y)
-        .normalize().applyAxisAngle(new THREE.Vector3(0, 1, 0), this.yaw);
-      velocity.x = move.x * this.moveSpeed;
-      velocity.z = move.z * this.moveSpeed;
+      this.playerBody.position.x += input.x * this.moveSpeed * dt;
+      this.playerBody.position.z += input.z * this.moveSpeed * dt;
     }
-
-    this.playerBody.velocity.x = velocity.x;
-    this.playerBody.velocity.z = velocity.z;
 
     this.camera.position.copy(this.playerBody.position);
     this.flashlight.position.copy(this.playerBody.position);
     this.flashlight.target.position.copy(
       this.camera.getWorldDirection(new THREE.Vector3()).add(this.playerBody.position)
     );
+
+    if (this.keyState.space) this.jump();
+  }
+
+  getInputDirection() {
+    const dir = new THREE.Vector3();
+
+    if (!this.isTouchDevice) {
+      if (this.keyState.keyw) dir.z -= 1;
+      if (this.keyState.keys) dir.z += 1;
+      if (this.keyState.keya) dir.x -= 1;
+      if (this.keyState.keyd) dir.x += 1;
+    } else {
+      dir.set(this.moveDirection.x, 0, -this.moveDirection.y);
+    }
+
+    return dir;
   }
 
   start() {
@@ -207,23 +180,36 @@ export class PlayerController {
   }
 
   addCollider(mesh) {
+    mesh.updateMatrixWorld(true);
     mesh.traverse((child) => {
-      if (child.isMesh) {
-        const shape = this.createTrimesh(child.geometry);
+      if (child.isMesh && child.geometry) {
+        const shape = this.createTrimesh(child.geometry, child);
         if (shape) {
           const body = new CANNON.Body({ mass: 0 });
           body.addShape(shape);
-          body.position.copy(child.getWorldPosition(new THREE.Vector3()));
+          body.position.set(0, 0, 0);
           this.world.addBody(body);
         }
       }
     });
   }
 
-  createTrimesh(geometry) {
+  createTrimesh(geometry, mesh) {
     if (!geometry.attributes.position) return null;
-    const pos = geometry.attributes.position.array;
-    const idx = geometry.index ? geometry.index.array : null;
+
+    const cloned = geometry.clone();
+    cloned.applyMatrix4(mesh.matrixWorld);
+
+    const pos = cloned.attributes.position.array;
+    const idx = cloned.index ? cloned.index.array : this.generateIndex(cloned);
+
     return new CANNON.Trimesh(pos, idx);
+  }
+
+  generateIndex(geometry) {
+    const count = geometry.attributes.position.count;
+    const index = new Uint16Array(count);
+    for (let i = 0; i < count; i++) index[i] = i;
+    return index;
   }
 }
