@@ -3,6 +3,42 @@ const { GLTFLoader } = await import('https://esm.sh/three@0.175.0/examples/jsm/l
 import * as CANNON from 'https://cdn.skypack.dev/cannon-es';
 
 import * as player_controller from "./player_controller.js";
+import * as item_controller from "./item_controller.js";
+
+function addCollider(world, mesh) {
+  mesh.updateMatrixWorld(true);
+  mesh.traverse((child) => {
+    if (child.isMesh && child.geometry) {
+      const shape = createTrimesh(child.geometry, child);
+      if (shape) {
+        const body = new CANNON.Body({ mass: 0 });
+        body.addShape(shape);
+        body.position.set(0, 0, 0);
+        world.addBody(body);
+      }
+    }
+  });
+}
+
+function createTrimesh(geometry, mesh) {
+  if (!geometry.attributes.position) return null;
+
+  const cloned = geometry.clone();
+  cloned.applyMatrix4(mesh.matrixWorld);
+
+  const pos = cloned.attributes.position.array;
+  const idx = cloned.index ? cloned.index.array : generateIndex(cloned);
+
+  return new CANNON.Trimesh(pos, idx);
+}
+
+function generateIndex(geometry) {
+  const count = geometry.attributes.position.count;
+  const index = new Uint16Array(count);
+  for (let i = 0; i < count; i++) index[i] = i;
+  return index;
+}
+
 
 export const world = new CANNON.World({
   gravity: new CANNON.Vec3(0, -9.82, 0)
@@ -33,11 +69,14 @@ flashlight.target.position.set(0, 0, -1);
 
 export const player = new player_controller.PlayerController(camera, flashlight, scene, renderer, world);
 
+const cube = new item_controller.ItemController(scene, world);
+
 export var running = false;
 
 export function update() {
   world.step(1 / 60);
   player.update();
+  cube.update();
 }
 
 export function render() {
@@ -50,7 +89,7 @@ export function start() {
 
   loader.load('models/test_scene.glb', (gltf) => {
       gltf.scene.position.set(0, -2, 0)
-      player.addCollider(gltf.scene);
+      addCollider(world, gltf.scene);
       scene.add(gltf.scene);
   });
   
