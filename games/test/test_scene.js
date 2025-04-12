@@ -80,7 +80,7 @@ export const player = new player_controller.PlayerController(camera, flashlight,
 const cube = new item_controller.ItemController(scene, world);
 var cubes = [];
 for (let i = 0; i < 100; i++) {
-  cubes.push(new item_controller.ItemController(scene, world, Math.random()/2 + 0.1, new THREE.Vector3(Math.random() * 10 - 5, Math.random() * 10 + 5, Math.random() * 10 - 5)));
+  cubes.push(new item_controller.ItemController(scene, world, Math.random()/3 + 0.2, new THREE.Vector3(Math.random() * 10 - 5, Math.random() * 10 + 5, Math.random() * 10 - 5)));
 }
 
 export var running = false;
