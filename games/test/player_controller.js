@@ -1,5 +1,6 @@
 const THREE = await import('https://esm.sh/three@0.175.0');
 import * as CANNON from 'https://cdn.skypack.dev/cannon-es';
+import { ItemController } from './item_controller.js';
 
 export class PlayerController {
   constructor(camera, flashlight, scene, renderer, world) {
@@ -14,7 +15,7 @@ export class PlayerController {
     this.joystick = null;
     this.moveDirection = { x: 0, y: 0 };
 
-    this.keyState = { keyw: false, keya: false, keys: false, keyd: false, space: false, keye: false };
+    this.keyState = { keyw: false, keya: false, keys: false, keyd: false, space: false };
     this.jumpState = false;
 
     this.yaw = 0;
@@ -73,6 +74,8 @@ export class PlayerController {
       }
     });
 
+    this.inventory = [];
+
     this.lastUpdateTime = performance.now();
     this.start();
     this.setupControls();
@@ -82,6 +85,17 @@ export class PlayerController {
     window.addEventListener('keydown', (e) => {
       const k = e.code;
       if (k.toLocaleLowerCase() in this.keyState) this.keyState[k.toLowerCase()] = true;
+      if (k == 'KeyE') this.tryPickUpItem();
+      if (k == 'KeyF' && this.inventory.length > 0) {
+        const item = this.inventory[0];
+        item.add();
+        item.sphereBody.position.copy(this.playerBody.position);
+        const throwDir = new THREE.Vector3();
+        this.camera.getWorldDirection(throwDir);
+        throwDir.normalize().multiplyScalar(50);
+        item.sphereBody.velocity.set(throwDir.x, throwDir.y, throwDir.z);
+        this.inventory.shift();
+      }
     });
 
     window.addEventListener('keyup', (e) => {
@@ -92,10 +106,8 @@ export class PlayerController {
   }
 
   setupTouchLookControls() {
-    const canvas = this.renderer.domElement;
-
-    canvas.addEventListener('touchstart', (e) => {
-      if (e.touches.length === 1) {
+    window.addEventListener('touchstart', (e) => {
+      if (e.touches.length === 1 && !this.joystickZone.contains(e.touches[0].target)) {
         const touch = e.touches[0];
         this.lastTouchX = touch.clientX;
         this.lastTouchY = touch.clientY;
@@ -103,7 +115,7 @@ export class PlayerController {
       }
     });
 
-    canvas.addEventListener('touchmove', (e) => {
+    window.addEventListener('touchmove', (e) => {
       if (this.isLooking && e.touches.length === 1) {
         const touch = e.touches[0];
         const dx = touch.clientX - this.lastTouchX;
@@ -119,7 +131,7 @@ export class PlayerController {
       }
     });
 
-    canvas.addEventListener('touchend', () => {
+    window.addEventListener('touchend', () => {
       this.isLooking = false;
     });
   }
@@ -192,10 +204,10 @@ export class PlayerController {
 
     if (intersects.length > 0) {
       const item = intersects[0].object;
-      if (true) {
+      if (item.userData && item.userData.self instanceof ItemController) {
         console.log('Picked up item:', item.userData.self);
-        this.scene.remove(item.userData.self.sphere);
-        this.world.removeBody(item.userData.self.sphereBody);
+        item.userData.self.remove();
+        this.inventory.push(item.userData.self);
       }
     }
   }
@@ -223,10 +235,6 @@ export class PlayerController {
 
     if (this.keyState.space && this.isOnGround) {
       this.jump();
-    }
-
-    if (this.keyState.keye) {
-      this.tryPickUpItem();
     }
 
     this.camera.position.copy(this.playerBody.position);

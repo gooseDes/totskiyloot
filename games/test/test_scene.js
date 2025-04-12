@@ -15,6 +15,13 @@ function addCollider(world, mesh) {
         body.collisionResponse = true;
         body.addShape(shape);
         body.position.set(0, 0, 0);
+        const physicsMaterial = new CANNON.Material('sceneMaterial');
+        const contactMaterial = new CANNON.ContactMaterial(physicsMaterial, physicsMaterial, {
+          friction: 0.01,
+          restitution: 0,
+        });
+        world.addContactMaterial(contactMaterial);
+        body.material = physicsMaterial;
         world.addBody(body);
       }
     }
@@ -71,6 +78,10 @@ flashlight.target.position.set(0, 0, -1);
 export const player = new player_controller.PlayerController(camera, flashlight, scene, renderer, world);
 
 const cube = new item_controller.ItemController(scene, world);
+var cubes = [];
+for (let i = 0; i < 100; i++) {
+  cubes.push(new item_controller.ItemController(scene, world, Math.random()/2 + 0.1, new THREE.Vector3(Math.random() * 10 - 5, Math.random() * 10 + 5, Math.random() * 10 - 5)));
+}
 
 export var running = false;
 
@@ -78,6 +89,9 @@ export function update() {
   world.step(1 / 60);
   player.update();
   cube.update();
+  for (let i = 0; i < cubes.length; i++) {
+    cubes[i].update();
+  }
 }
 
 export function render() {

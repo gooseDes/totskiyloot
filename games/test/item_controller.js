@@ -9,11 +9,11 @@ export class ItemController {
 
     this.geometry = new THREE.SphereGeometry(radius, 32, 32);
     this.material = new THREE.MeshStandardMaterial({ color: 0xff4444 });
-    this.sphere = new THREE.Mesh(this.geometry, this.material);
-    this.sphere.castShadow = true;
-    this.sphere.receiveShadow = true;
-    this.sphere.userData = { self: this };
-    this.scene.add(this.sphere);
+    this.mesh = new THREE.Mesh(this.geometry, this.material);
+    this.mesh.castShadow = true;
+    this.mesh.receiveShadow = true;
+    this.mesh.userData = { self: this };
+    this.scene.add(this.mesh);
 
     this.sphereBody = new CANNON.Body({
       mass: 1,
@@ -23,16 +23,34 @@ export class ItemController {
       angularDamping: 0.9,
     });
 
+    const physicsMaterial = new CANNON.Material('sphereMaterial');
+    const contactMaterial = new CANNON.ContactMaterial(physicsMaterial, physicsMaterial, {
+      friction: 0.1,
+      restitution: 0,
+    });
+    this.world.addContactMaterial(contactMaterial);
+    this.sphereBody.material = physicsMaterial;
+
     this.world.addBody(this.sphereBody);
     this.lastUpdateTime = performance.now();
   }
 
   update() {
-    this.sphere.position.copy(this.sphereBody.position);
-    this.sphere.quaternion.copy(this.sphereBody.quaternion);
+    this.mesh.position.copy(this.sphereBody.position);
+    this.mesh.quaternion.copy(this.sphereBody.quaternion);
 
     const now = performance.now();
     const dt = (now - this.lastUpdateTime) / 1000;
     this.lastUpdateTime = now;
+  }
+
+  remove() {
+    this.scene.remove(this.mesh);
+    this.world.removeBody(this.sphereBody);
+  }
+
+  add() {
+    this.scene.add(this.mesh);
+    this.world.addBody(this.sphereBody);
   }
 }
