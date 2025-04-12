@@ -93,6 +93,7 @@ export class PlayerController {
         const throwDir = new THREE.Vector3();
         this.camera.getWorldDirection(throwDir);
         throwDir.normalize().multiplyScalar(50);
+        throwDir.y += 10;
         item.sphereBody.velocity.set(throwDir.x, throwDir.y, throwDir.z);
         this.inventory.shift();
       }
