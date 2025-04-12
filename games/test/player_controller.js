@@ -33,7 +33,7 @@ export class PlayerController {
     const cylinderShape = new CANNON.Cylinder(radius, radius, height - 2 * radius, 8);
 
     this.playerBody = new CANNON.Body({
-      mass: 1,
+      mass: 3,
       fixedRotation: true,
       linearDamping: 0.9
     });
