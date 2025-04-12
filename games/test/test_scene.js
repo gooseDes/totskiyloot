@@ -12,6 +12,7 @@ function addCollider(world, mesh) {
       const shape = createTrimesh(child.geometry, child);
       if (shape) {
         const body = new CANNON.Body({ mass: 0 });
+        body.collisionResponse = true;
         body.addShape(shape);
         body.position.set(0, 0, 0);
         world.addBody(body);
@@ -112,15 +113,17 @@ export function stop() {
 }
 
 window.addEventListener('click', () => {
-  renderer.domElement.requestPointerLock();
-  if (document.documentElement.requestFullscreen) {
-    document.documentElement.requestFullscreen();
-  } else if (document.documentElement.mozRequestFullScreen) {
-      document.documentElement.mozRequestFullScreen();
-  } else if (document.documentElement.webkitRequestFullscreen) {
-      document.documentElement.webkitRequestFullscreen();
-  } else if (document.documentElement.msRequestFullscreen) {
-      document.documentElement.msRequestFullscreen();
+  if (!('ontouchstart' in window)) {
+    renderer.domElement.requestPointerLock();
+    if (document.documentElement.requestFullscreen) {
+      document.documentElement.requestFullscreen();
+    } else if (document.documentElement.mozRequestFullScreen) {
+        document.documentElement.mozRequestFullScreen();
+    } else if (document.documentElement.webkitRequestFullscreen) {
+        document.documentElement.webkitRequestFullscreen();
+    } else if (document.documentElement.msRequestFullscreen) {
+        document.documentElement.msRequestFullscreen();
+    }
   }
 });
 

@@ -2,7 +2,7 @@ import * as THREE from 'https://esm.sh/three@0.175.0';
 import * as CANNON from 'https://cdn.skypack.dev/cannon-es';
 
 export class ItemController {
-  constructor(scene, world, radius = 0.1, position = new THREE.Vector3(0, 5, 0)) {
+  constructor(scene, world, radius = 0.3, position = new THREE.Vector3(0, 5, 0)) {
     this.scene = scene;
     this.world = world;
     this.radius = radius;
@@ -12,6 +12,7 @@ export class ItemController {
     this.sphere = new THREE.Mesh(this.geometry, this.material);
     this.sphere.castShadow = true;
     this.sphere.receiveShadow = true;
+    this.sphere.userData = { self: this };
     this.scene.add(this.sphere);
 
     this.sphereBody = new CANNON.Body({
@@ -33,19 +34,5 @@ export class ItemController {
     const now = performance.now();
     const dt = (now - this.lastUpdateTime) / 1000;
     this.lastUpdateTime = now;
-  }
-
-  applyMovement(dt) {
-    if (this.sphereBody) {
-      const force = new CANNON.Vec3(Math.random() * 10 - 5, 0, Math.random() * 10 - 5);
-      this.sphereBody.applyForce(force, this.sphereBody.position);
-    }
-  }
-
-  stopMovement() {
-    if (this.sphereBody) {
-      this.sphereBody.velocity.set(0, 0, 0);
-      this.sphereBody.angularVelocity.set(0, 0, 0);
-    }
   }
 }
