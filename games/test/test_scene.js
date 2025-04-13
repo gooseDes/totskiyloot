@@ -127,6 +127,8 @@ export function start() {
   scene.add(ambientLight);
   scene.add(flashlight);
   scene.add(flashlight.target);
+
+  document.getElementById('pointer').style.visibility = 'visible';
 }
 
 export function stop() {

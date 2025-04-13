@@ -71,13 +71,26 @@
       justify-content: center;
       align-items: center;
     }
+    #pointer {
+      background-color: rgb(255, 255, 255, 0.5);
+      border-radius: 50%;
+      pointer-events: none;
+      width: 1svh;
+      aspect-ratio: 1/1;
+      visibility: hidden;
+    }
   </style>
 </head>
 <body>
   <script src="https://cdn.jsdelivr.net/npm/nipplejs@0.9.0/dist/nipplejs.min.js"></script>
   <div id="joystick-zone" style="position: fixed; bottom: 100px; left: 100px; width: 150px; height: 150px;"></div>
   <button id="jump-button">&uparrow;</button>
-  <div class="full_center"><button id="play-button"><i class="fa-solid fa-play"></i> Play</button></div>
+  <div class="full_center">
+    <div id="pointer"></div>
+  </div>
+  <div class="full_center">
+    <button id="play-button"><i class="fa-solid fa-play"></i> Play</button>
+  </div>
   <script type="module" src="script.js"></script>
 </body>
 </html>
