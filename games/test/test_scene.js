@@ -91,6 +91,12 @@ loader.load('models/ball.glb', (gltf) => {
   }
 });
 
+loader.load('models/totskiy.glb', (gltf) => {
+  for (let i = 0; i < 50; i++) {
+    cubes.push(new item_controller.ItemController(scene, world, Math.random()/3 + 0.2, new THREE.Vector3(Math.random() * 10 - 5, Math.random() * 10 + 5, Math.random() * 10 - 5), gltf.scene.children[0].clone()));
+  }
+});
+
 export var running = false;
 
 export function update() {
