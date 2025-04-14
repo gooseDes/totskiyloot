@@ -79,12 +79,52 @@
       aspect-ratio: 1/1;
       visibility: hidden;
     }
+    #throw-button {
+      z-index: 998;
+      position: fixed;
+      bottom: 50px;
+      right: 50px;
+      width: 100px;
+      height: 100px;
+      background-color: rgba(255, 255, 255, 0.5);
+      border: none;
+      border-radius: 2svh;
+      font-size: 20px;
+      justify-content: center;
+      align-items: center;
+      display: flex;
+      font-family: 'Baloo 2';
+      color: rgba(255, 255, 255, 0.8);
+      visibility: hidden;
+    }
+    #pick-button {
+      z-index: 999;
+      position: fixed;
+      bottom: 200px;
+      right: 75px;
+      width: 100px;
+      height: 100px;
+      background-color: rgba(255, 255, 255, 0.5);
+      border: none;
+      border-radius: 2svh;
+      font-size: 20px;
+      justify-content: center;
+      align-items: center;
+      display: flex;
+      font-family: 'Baloo 2';
+      color: rgba(255, 255, 255, 0.8);
+      visibility: hidden;
+    }
+    #throw-button, #pick-button {
+      pointer-events: auto;
+    }
   </style>
 </head>
 <body>
   <script src="https://cdn.jsdelivr.net/npm/nipplejs@0.9.0/dist/nipplejs.min.js"></script>
   <div id="joystick-zone" style="position: fixed; bottom: 100px; left: 100px; width: 150px; height: 150px;"></div>
-  <button id="jump-button">&uparrow;</button>
+  <button id="throw-button" style="visibility: hidden;">Throw</button>
+  <button id="pick-button" style="visibility: hidden;">Pick</button>
   <div class="full_center">
     <div id="pointer"></div>
   </div>

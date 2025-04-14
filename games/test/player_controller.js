@@ -11,7 +11,6 @@ export class PlayerController {
     this.world = world;
 
     this.joystickZone = document.getElementById('joystick-zone');
-    this.jumpButton = document.getElementById('jump-button');
     this.joystick = null;
     this.moveDirection = { x: 0, y: 0 };
 
@@ -86,17 +85,7 @@ export class PlayerController {
       const k = e.code;
       if (k.toLocaleLowerCase() in this.keyState) this.keyState[k.toLowerCase()] = true;
       if (k == 'KeyE') this.tryPickUpItem();
-      if (k == 'KeyF' && this.inventory.length > 0) {
-        const item = this.inventory[0];
-        item.add();
-        item.sphereBody.position.copy(this.playerBody.position);
-        const throwDir = new THREE.Vector3();
-        this.camera.getWorldDirection(throwDir);
-        throwDir.normalize().multiplyScalar(50);
-        throwDir.y += 10;
-        item.sphereBody.velocity.set(throwDir.x, throwDir.y, throwDir.z);
-        this.inventory.shift();
-      }
+      if (k == 'KeyF' && this.inventory.length > 0) this.throwItem();
     });
 
     window.addEventListener('keyup', (e) => {
@@ -146,9 +135,16 @@ export class PlayerController {
       color: 'white'
     });
 
-    this.jumpButton.style.visibility = 'visible';
-    this.jumpButton.addEventListener('click', () => {
-      this.jump();
+    const throwButton = document.getElementById('throw-button');
+    throwButton.style.visibility = 'visible';
+    throwButton.addEventListener('touchstart', () => {
+      this.throwItem();
+    });
+
+    const pickButton = document.getElementById('pick-button');
+    pickButton.style.visibility = 'visible';
+    pickButton.addEventListener('touchstart', () => {
+      this.tryPickUpItem();
     });
 
     this.joystick.on('move', (evt, data) => {
@@ -211,6 +207,18 @@ export class PlayerController {
         this.inventory.push(item.userData.self);
       }
     }
+  }
+
+  throwItem() {
+    const item = this.inventory[0];
+    item.add();
+    item.sphereBody.position.copy(this.playerBody.position);
+    const throwDir = new THREE.Vector3();
+    this.camera.getWorldDirection(throwDir);
+    throwDir.normalize().multiplyScalar(50);
+    throwDir.y += 10;
+    item.sphereBody.velocity.set(throwDir.x, throwDir.y, throwDir.z);
+    this.inventory.shift();
   }
 
   update() {
