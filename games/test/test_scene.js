@@ -5,6 +5,8 @@ import * as CANNON from 'https://cdn.skypack.dev/cannon-es';
 import * as player_controller from "./player_controller.js";
 import * as item_controller from "./item_controller.js";
 
+const clock = new THREE.Clock();
+
 function addCollider(world, mesh) {
   mesh.updateMatrixWorld(true);
   mesh.traverse((child) => {
@@ -75,6 +77,36 @@ flashlight.shadow.mapSize.height = 1024;
 flashlight.shadow.bias = -0.005;
 flashlight.target.position.set(0, 0, -1);
 
+var totksiy;
+
+loader.load('models/totskiy.glb', (gltf) => {
+  totksiy = gltf.scene;
+  totksiy.position.set(116, -1.5, 0);
+  totksiy.rotation.set(0, -Math.PI / 2, 0);
+  scene.add(totksiy);
+  const mixer = new THREE.AnimationMixer(totksiy);
+
+  const clip = THREE.AnimationClip.findByName(gltf.animations, 'test_anim');
+
+  if (clip) {
+      const action = mixer.clipAction(clip);
+
+      action.setLoop(THREE.LoopRepeat);
+      action.play();
+  } else {
+      console.warn('Animation clip not found in the loaded model.');
+  }
+
+  function animate() {
+      requestAnimationFrame(animate);
+      const delta = clock.getDelta();
+      mixer.update(delta);
+      renderer.render(scene, camera);
+  }
+
+  animate();
+});
+
 export const player = new player_controller.PlayerController(camera, flashlight, scene, renderer, world);
 
 const cube = new item_controller.ItemController(scene, world);
@@ -86,12 +118,6 @@ loader.load('models/monkey.glb', (gltf) => {
 });
 
 loader.load('models/ball.glb', (gltf) => {
-  for (let i = 0; i < 50; i++) {
-    cubes.push(new item_controller.ItemController(scene, world, Math.random()/3 + 0.2, new THREE.Vector3(Math.random() * 10 - 5, Math.random() * 10 + 5, Math.random() * 10 - 5), gltf.scene.children[0].clone()));
-  }
-});
-
-loader.load('models/totskiy.glb', (gltf) => {
   for (let i = 0; i < 50; i++) {
     cubes.push(new item_controller.ItemController(scene, world, Math.random()/3 + 0.2, new THREE.Vector3(Math.random() * 10 - 5, Math.random() * 10 + 5, Math.random() * 10 - 5), gltf.scene.children[0].clone()));
   }

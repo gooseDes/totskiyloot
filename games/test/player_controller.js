@@ -243,6 +243,10 @@ export class PlayerController {
     this.flashlight.target.position.copy(
       this.camera.getWorldDirection(new THREE.Vector3()).add(this.playerBody.position)
     );
+
+    if (this.keyState.space) {
+      console.log(this.camera.position);
+    }
   }
 
   getInputDirection() {

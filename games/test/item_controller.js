@@ -7,14 +7,15 @@ export class ItemController {
     this.world = world;
     this.radius = radius;
 
-    // Use the custom mesh if provided, otherwise create a default sphere mesh
     this.mesh = customMesh || new THREE.Mesh(
       new THREE.SphereGeometry(radius, 32, 32),
       new THREE.MeshStandardMaterial({ color: 0xff4444 })
     );
 
-    // Scale the mesh to match the radius
-    const scale = (radius) / Math.max(this.mesh.geometry.boundingBox?.max.x || 1, 1);
+    var scale = radius;
+    try {
+      scale = (radius) / Math.max(this.mesh.geometry.boundingBox?.max.x || 1, 1);
+    } catch (e) {}
     this.mesh.scale.set(scale, scale, scale);
 
     this.mesh.castShadow = true;
@@ -22,7 +23,6 @@ export class ItemController {
     this.mesh.userData = { self: this };
     this.scene.add(this.mesh);
 
-    // Physics body remains a sphere
     this.sphereBody = new CANNON.Body({
       mass: 1,
       position: new CANNON.Vec3(position.x, position.y, position.z),
@@ -44,7 +44,6 @@ export class ItemController {
   }
 
   update() {
-    // Sync the custom mesh's position and rotation with the physics body
     this.mesh.position.copy(this.sphereBody.position);
     this.mesh.quaternion.copy(this.sphereBody.quaternion);
 
