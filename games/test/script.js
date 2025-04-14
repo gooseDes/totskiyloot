@@ -7,14 +7,20 @@ scenes['test'] = test_scene;
 
 menu_scene.start();
 
-document.getElementById('play-button').addEventListener('click', () => {
+const playButton = document.getElementById('play-button');
+
+playButton.addEventListener('click', handlePlayButton);
+playButton.addEventListener('touchstart', handlePlayButton);
+
+function handlePlayButton(e) {
+    e.preventDefault();
+    playButton.classList.add('play-button-anim');
     setTimeout(() => {
-        document.getElementById('play-button').style.visibility = 'hidden';
+        playButton.style.display = 'none';
         menu_scene.stop();
         test_scene.start();
-    }, 1000);    
-    document.getElementById('play-button').classList.add('play-button-anim');
-});
+    }, 1000);
+}
 
 function update() {
     requestAnimationFrame(update);

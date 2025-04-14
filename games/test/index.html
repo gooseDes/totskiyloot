@@ -30,7 +30,7 @@
       visibility: hidden;
     }
     #play-button {
-      z-index: 999;
+      z-index: 10000;
       font-weight: 900;
       font-size: 4svh;
       font-family: 'Baloo 2';
@@ -43,6 +43,7 @@
       border-radius: 2svh;
       transition: all 0.2s ease;
       transform-origin: center;
+      touch-action: auto;
     }
     button:hover {
       scale: 1.1;
@@ -117,6 +118,9 @@
     }
     #throw-button, #pick-button {
       pointer-events: auto;
+    }
+    body, #joystick-zone, #throw-button, #pick-button {
+      touch-action: none;
     }
   </style>
 </head>

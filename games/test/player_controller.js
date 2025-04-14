@@ -103,26 +103,29 @@ export class PlayerController {
         this.lastTouchY = touch.clientY;
         this.isLooking = true;
       }
+      e.preventDefault();
     });
-
+  
     window.addEventListener('touchmove', (e) => {
       if (this.isLooking && e.touches.length === 1) {
         const touch = e.touches[0];
         const dx = touch.clientX - this.lastTouchX;
         const dy = touch.clientY - this.lastTouchY;
-
+  
         const sens = 0.002;
         this.yaw -= dx * sens;
         this.pitch = Math.max(-Math.PI / 2 + 0.1, Math.min(Math.PI / 2 - 0.1, this.pitch - dy * sens));
         this.updateCameraRotation();
-
+  
         this.lastTouchX = touch.clientX;
         this.lastTouchY = touch.clientY;
       }
+      e.preventDefault();
     });
-
-    window.addEventListener('touchend', () => {
+  
+    window.addEventListener('touchend', (e) => {
       this.isLooking = false;
+      e.preventDefault();
     });
   }
 
@@ -134,31 +137,33 @@ export class PlayerController {
       position: { left: '2svh', bottom: '2svh' },
       color: 'white'
     });
-
+  
     const throwButton = document.getElementById('throw-button');
     throwButton.style.visibility = 'visible';
-    throwButton.addEventListener('touchstart', () => {
+    throwButton.addEventListener('touchstart', (e) => {
+      e.preventDefault();
       this.throwItem();
     });
-
+  
     const pickButton = document.getElementById('pick-button');
     pickButton.style.visibility = 'visible';
-    pickButton.addEventListener('touchstart', () => {
+    pickButton.addEventListener('touchstart', (e) => {
+      e.preventDefault();
       this.tryPickUpItem();
     });
-
+  
     this.joystick.on('move', (evt, data) => {
       const rad = data.angle.radian;
       const force = data.force;
       this.moveDirection.x = Math.cos(rad) * force;
       this.moveDirection.y = Math.sin(rad) * force;
     });
-
+  
     this.joystick.on('end', () => {
       this.moveDirection.x = 0;
       this.moveDirection.y = 0;
     });
-
+  
     this.setupTouchLookControls();
   }
 
