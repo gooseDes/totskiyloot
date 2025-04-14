@@ -168,20 +168,23 @@ export function stop() {
   document.body.removeChild(renderer.domElement);
 }
 
-window.addEventListener('click', () => {
+function fullScreenAndPointerLock() {
   if (!('ontouchstart' in window)) {
     renderer.domElement.requestPointerLock();
-    if (document.documentElement.requestFullscreen) {
-      document.documentElement.requestFullscreen();
-    } else if (document.documentElement.mozRequestFullScreen) {
-        document.documentElement.mozRequestFullScreen();
-    } else if (document.documentElement.webkitRequestFullscreen) {
-        document.documentElement.webkitRequestFullscreen();
-    } else if (document.documentElement.msRequestFullscreen) {
-        document.documentElement.msRequestFullscreen();
-    }
   }
-});
+  if (document.documentElement.requestFullscreen) {
+    document.documentElement.requestFullscreen();
+  } else if (document.documentElement.mozRequestFullScreen) {
+      document.documentElement.mozRequestFullScreen();
+  } else if (document.documentElement.webkitRequestFullscreen) {
+      document.documentElement.webkitRequestFullscreen();
+  } else if (document.documentElement.msRequestFullscreen) {
+      document.documentElement.msRequestFullscreen();
+  }
+};
+
+window.addEventListener('click', fullScreenAndPointerLock);
+window.addEventListener('touchstart', fullScreenAndPointerLock);
 
 window.addEventListener('resize', () => {
   camera.aspect = window.innerWidth / window.innerHeight;
