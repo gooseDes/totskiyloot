@@ -2,6 +2,11 @@ window.addEventListener('load', () => {
     const canvas = document.getElementById("gameCanvas");
     const ctx = canvas.getContext("2d");
 
+    const exitButton = document.getElementById("exitButton");
+    exitButton.addEventListener("click", () => {
+        goto("/games");
+    });
+
     var w, h;
 
     w = canvas.parentElement.getClientRects()[0].width;
@@ -17,7 +22,7 @@ window.addEventListener('load', () => {
 
     let ball = {
         x: w / 2,
-        y: 50,
+        y: 0,
         radius: 15,
         vy: 0,
         vx: 0
@@ -161,7 +166,7 @@ window.addEventListener('load', () => {
 
             if (ball.y + ball.radius > h) {
                 ball.y = h - ball.radius;
-                ball.vy = -2 * Math.abs(ball.vy);
+                ball.vy = -1 * Math.abs(ball.vy);
             }
             if (ball.x + ball.radius > w || ball.x - ball.radius < 0) {
                 ball.x -= ball.vx;

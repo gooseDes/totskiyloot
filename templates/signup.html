@@ -3,17 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TL - Sign In</title>
-    <link rel="stylesheet" href="general.css">
-    <link rel="stylesheet" href="signin.css">
+    <title>TL - Sign Up</title>
+    <link rel="stylesheet" href="/static/css/general.css">
+    <link rel="stylesheet" href="/static/css/signin.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400..800&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/js/all.min.js" defer></script>
 </head>
 <body>
-    <script src="general.js"></script>
-    <script src="signin.js"></script>
+    <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+    <script src="/static/js/general.js"></script>
+    <script src="/static/js/signup.js"></script>
     <div class="navigation_panel">
         <button class="navigation_button" id="navButton"><i class="fa-solid fa-bars"></i></button>
         <div class="filler"></div>
@@ -21,13 +22,15 @@
     </div>
     <div class="content">
         <div class="square_bg"></div>
-        <form action="" class="form1">
+        <div action="" class="form1">
             <label for="">Username: </label>
             <input type="text" name="username" id="username_input"><br>
             <label for="">Password: </label>
             <input type="password" name="pass" id="pass_input"><br>
-            <button class="signin_button" id="signin_button">Sign in</button>
-        </form>
+            <label for="">Reapet: </label>
+            <input type="password" name="pass2" id="pass2_input"><br>
+            <button class="signin_button" id="signin_button">Sign Up</button>
+        </div>
     </div>
 
     <div id="sideNav" class="side_nav">
