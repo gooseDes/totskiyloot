@@ -22,7 +22,7 @@ cursor.execute("USE totskiyloot")
 
 print("Creating tables...")
 
-cursor.execute("CREATE TABLE users (id INT AUTO_INCREMENT PRIMARY KEY, username VARCHAR(255), password VARCHAR(60), money INT DEFAULT 1488)")
+cursor.execute("CREATE TABLE users (id INT AUTO_INCREMENT PRIMARY KEY, username VARCHAR(255), password VARCHAR(60), money BIGINT DEFAULT 1488)")
 
 print("Closing connection...")
 

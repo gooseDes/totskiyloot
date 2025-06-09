@@ -62,5 +62,7 @@ label {
     justify-content: center;
     align-items: center;
     flex-direction: column;
-    background-color: rgb(0, 0, 0, 0.4);
+    background-color: rgb(0, 0, 0, 0.5);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
 }

@@ -10,39 +10,88 @@ function goto(page) {
 }
 
 window.addEventListener('load', function() {
-    setTimeout(function() {
-        window.scrollTo({
-          top: 0,
-          behavior: 'smooth'
-        });
-    }, 350);
+    const script = document.createElement("script");
+    script.src = "https://cdn.socket.io/4.7.2/socket.io.min.js";
+    script.onload = () => {
+        const socket = io(`${location.protocol}//${location.host}`);
+        setTimeout(function() {
+            window.scrollTo({
+            top: 0,
+            behavior: 'smooth'
+            });
+        }, 350);
 
-    try {
-        document.getElementById("navButton").addEventListener("click", function() {
-            if (window.matchMedia("(orientation: landscape)").matches) {
-                document.getElementById("sideNav").style.width = "300px";
-            } else {
-                document.getElementById("sideNav").style.width = "100%";
-            }
-            document.getElementById("content").style.filter = "blur(10px)";
-        });
-        document.getElementById("closeNav").addEventListener("click", function() {
-            document.getElementById("sideNav").style.width = "0";
-            document.getElementById("content").style.filter = "";
-        });
-        document.getElementById("userButton").addEventListener("click", function() {
-            goto('signin');
-        });
-    } catch (e) {}
+        try {
+            document.getElementById("navButton").addEventListener("click", function() {
+                if (window.matchMedia("(orientation: landscape)").matches) {
+                    document.getElementById("sideNav").style.width = "300px";
+                } else {
+                    document.getElementById("sideNav").style.width = "100%";
+                }
+                document.getElementById("content").style.filter = "blur(10px)";
+            });
+            document.getElementById("closeNav").addEventListener("click", function() {
+                document.getElementById("sideNav").style.width = "0";
+                document.getElementById("content").style.filter = "";
+            });
+            document.getElementById("userButton").addEventListener("click", function() {
+                socket.emit('verify_token', {'token': localStorage.getItem('token')});
+                socket.on('verify_token_result', (data) => {
+                    if (!data.success || !data.valid) goto('/signin')
+                    else goto(`/profile/${localStorage.getItem('username')}`)
+                });
+            });
+        } catch (e) {}
 
-    setInterval(function() {
-        var ars = document.querySelectorAll(".ar9_16");
-        ars.forEach((ar) => {
-            if (window.innerWidth/window.innerHeight > 9/16) {
-                ar.style.aspectRatio = "9/16";
-            } else {
-                ar.style.aspectRatio = "";
-            }
+        setInterval(function() {
+            var ars = document.querySelectorAll(".ar9_16");
+            ars.forEach((ar) => {
+                if (window.innerWidth/window.innerHeight > 9/16) {
+                    ar.style.aspectRatio = "9/16";
+                } else {
+                    ar.style.aspectRatio = "";
+                }
+            });
+        }, 1/30);
+
+        document.querySelectorAll('.popup-close').forEach((button) => {
+            button.addEventListener('click', (e) => {
+                e.preventDefault();
+                const popup = button.closest('.popup');
+                if (popup) {
+                    closePopup(popup.id);
+                }
+            });
         });
-    }, 1/30);
+    };
+
+    document.head.appendChild(script);
 });
+
+function openPopup(popupId) {
+  const popup = document.getElementById(popupId);
+  if (popup) {
+    popup.classList.remove('popup-hide');
+    popup.style.display = 'flex';
+    popup.classList.add('popup-show');
+    document.querySelectorAll('.mobile-ui').forEach((el) => {
+      el.style.translate = '0 100vh';
+    });
+    document.getElementById('content').style.filter = 'blur(5px)'
+  }
+}
+
+function closePopup(popupId) {
+  const popup = document.getElementById(popupId);
+  if (popup) {
+    document.getElementById('content').style.filter = 'blur(0)'
+    popup.classList.remove('popup-show');
+    popup.classList.add('popup-hide');
+    document.querySelectorAll('.mobile-ui').forEach((el) => {
+      el.style.translate = '0 0';
+    });
+    setTimeout(() => {
+      popup.style.display = 'none';
+    }, 300);
+  }
+}

@@ -22,19 +22,21 @@
         </div>
         <div class="center_fullwidth">
             <div class="ar9_16">
-                <h1>{{username}}</h1>
-                <img src="/static/img/avatar.svg" alt="avatar" id="avatar">
+                <div id="profile">
+                    <img src="/static/img/avatar.svg" alt="avatar" id="avatar">
+                    <h1>{{username}}</h1>
+                </div>
                 <div class="money_counter"><i class="fa-solid fa-coins"></i><p id="money">{{money}}</p></div>
-                <button onclick="goto('index')" class="letsgo_button">Go Back</button>
+                <button class="logout" id="logout_button">Log Out</button>
             </div>
         </div>
     </div>
 
     <div id="sideNav" class="side_nav">
         <button id="closeNav" class="close_btn">&times;</button>
-        <a onclick="goto('index')">Home</a>
-        <a onclick="goto('games')">Games</a>
-        <a onclick="goto('contact')">Contact</a>
+        <a onclick="goto('/index')">Home</a>
+        <a onclick="goto('/games')">Games</a>
+        <a onclick="goto('/contact')">Contact</a>
     </div>
 </body>
 </html>

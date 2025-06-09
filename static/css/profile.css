@@ -1,15 +1,56 @@
 .ar9_16 {
     background-color: rgba(0, 0, 0, 0.5);
     border-radius: 2svh;
-    height: 90vh;
+    height: 80vh;
     margin-top: 2vh;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
 }
 
 h1 {
     width: 80%;
+    background: none;
+    margin: 0;
+}
+
+#profile {
+    background-color: rgba(0, 0, 0, 0.05);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border-radius: 2svh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    margin: 2svh 0;
 }
 
 #avatar {
     width: 80%;
     aspect-ratio: 1/1;
+    margin-top: 1svh;
+}
+
+.logout {
+    background-color: rgba(0, 0, 0, 0.05);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border-radius: 2svh;
+    border: 1svh white solid;
+    color: red;
+    font-weight: bold;
+    font-size: 5svh;
+    font-family: 'Baloo 2';
+    margin: 2svh;
+    transition: all 0.2s ease;
+    position: absolute;
+    bottom: 0px;
+    right: 0px;
+    display: none;
+}
+
+.logout:hover {
+    scale: 1.1;
+    rotate: 15deg;
+    filter: brightness(2);
 }

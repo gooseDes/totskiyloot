@@ -170,3 +170,17 @@ html, body {
     right: 1vw;
     height: 8%;
 }
+
+#signin-first-popup {
+    width: 50%;
+    height: 1vh;
+}
+
+#signin-first-popup .popup-content {
+    height: 1vh;
+}
+
+a {
+    color: cornflowerblue;
+    font-style: italic;
+}

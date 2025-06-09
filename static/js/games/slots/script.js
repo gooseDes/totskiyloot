@@ -1,6 +1,5 @@
-const socket = io(`${location.protocol}//${location.host}`);
-
 window.addEventListener("load", function() {
+    const socket = io(`${location.protocol}//${location.host}`);
     document.getElementById('exitButton').addEventListener("click", function() {
         goto('/games');
     });
@@ -65,6 +64,10 @@ window.addEventListener("load", function() {
     });
     
     document.getElementById('spinButton').addEventListener("click", function() {
+        if (!localStorage.getItem('token')) {
+            openPopup('signin-first-popup');
+            return;
+        }
         socket.emit('spin', {'token': localStorage.getItem('token')});
         setTimeout(function() {
             document.getElementById('spinButton').classList.remove('spinning');

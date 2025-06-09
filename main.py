@@ -1,4 +1,5 @@
 import flask
+from flask import request
 from flask_socketio import SocketIO
 from bcrypt import gensalt, hashpw, checkpw
 from random import randint
@@ -74,13 +75,13 @@ def handle_connect():
 @socketio.on('reg')
 def handle_registration(data):
     if not data.get('username') or not data.get('password'):
-        socketio.emit('reg_result', {'success': False, 'message': 'Username and password are required.'})
+        socketio.emit('reg_result', {'success': False, 'message': 'Username and password are required.'}, to=request.sid)
         return
     username = data['username']
     password = data['password']
     cursor.execute("SELECT * FROM users WHERE username = %s", (username,))
     if cursor.fetchone():
-        socketio.emit('reg_result', {'success': False, 'message': 'Username already exists.'})
+        socketio.emit('reg_result', {'success': False, 'message': 'Username already exists.'}, to=request.sid)
         return
     password = password.encode('utf-8')
     salt = gensalt()
@@ -88,40 +89,40 @@ def handle_registration(data):
     password = password.decode('utf-8')
     cursor.execute("INSERT INTO users (username, password) VALUES (%s, %s)", (username, password))
     db.commit()
-    socketio.emit('reg_result', {'success': True, 'message': 'Registration successful!', 'token': create_token(username)})
+    socketio.emit('reg_result', {'success': True, 'message': 'Registration successful!', 'token': create_token(username)}, to=request.sid)
 
 @socketio.on('login')
 def handle_login(data):
     if not data.get('username') or not data.get('password'):
-        socketio.emit('login_result', {'success': False, 'message': 'Username and password are required.'})
+        socketio.emit('login_result', {'success': False, 'message': 'Username and password are required.'}, to=request.sid)
         return
     username = data['username']
     password = data['password'].encode('utf-8')
     cursor.execute("SELECT * FROM users WHERE username = %s", (username,))
     user = cursor.fetchone()
     if not user:
-        socketio.emit('login_result', {'success': False, 'message': 'No user found with that username.'})
+        socketio.emit('login_result', {'success': False, 'message': 'No user found with that username.'}, to=request.sid)
         return
     db_password = user[2].encode('utf-8')
     if checkpw(password, db_password):
-        socketio.emit('login_result', {'success': True, 'message': 'Login successful!', 'money': user[3], 'token': create_token(username)})
+        socketio.emit('login_result', {'success': True, 'message': 'Login successful!', 'money': user[3], 'token': create_token(username)}, to=request.sid)
     else:
-        socketio.emit('login_result', {'success': False, 'message': 'Incorrect password.'})
+        socketio.emit('login_result', {'success': False, 'message': 'Incorrect password.'}, to=request.sid)
 
 @socketio.on('spin')
 def handle_message(data):
     if not data.get('token'):
-        socketio.emit('spin_result', {'success': False, 'message': 'Token is required.'})
+        socketio.emit('spin_result', {'success': False, 'message': 'Token is required.'}, to=request.sid)
         return
     spin_result = randint(0, 100)
     username = verify_token(data['token'])
     if not username:
-        socketio.emit('spin_result', {'success': False, 'message': 'Invalid or expired token.'})
+        socketio.emit('spin_result', {'success': False, 'message': 'Invalid or expired token.'}, to=request.sid)
         return
     cursor.execute("SELECT money FROM users WHERE username = %s", (username,))
     money = cursor.fetchone()
     if not money:
-        socketio.emit('spin_result', {'success': False, 'message': 'User not found.'})
+        socketio.emit('spin_result', {'success': False, 'message': 'User not found.'}, to=request.sid)
         return
     money = money[0]
     if spin_result < 90:
@@ -136,26 +137,37 @@ def handle_message(data):
         success = True
         money += 10000
         result = 'jackpot'
-    socketio.emit('spin_result', {'success': success, 'money': money, 'result': result})
+    socketio.emit('spin_result', {'success': success, 'money': money, 'result': result}, to=request.sid)
     cursor.execute("UPDATE users SET money = %s WHERE username = %s", (money, username))
     db.commit()
 
 @socketio.on('get_money')
 def handle_get_money(data):
     if not data.get('token'):
-        socketio.emit('get_money_result', {'success': False, 'message': 'Token is required.'})
+        socketio.emit('get_money_result', {'success': False, 'message': 'Token is required.'}, to=request.sid)
         return
     username = verify_token(data['token'])
     if not username:
-        socketio.emit('get_money_result', {'success': False, 'message': 'Invalid or expired token.'})
+        socketio.emit('get_money_result', {'success': False, 'message': 'Invalid or expired token.'}, to=request.sid)
         return
     cursor.execute("SELECT money FROM users WHERE username = %s", (username,))
     money = cursor.fetchone()
     if not money:
-        socketio.emit('get_money_result', {'success': False, 'message': 'User not found.'})
+        socketio.emit('get_money_result', {'success': False, 'message': 'User not found.'}, to=request.sid)
         return
     money = money[0]
-    socketio.emit('get_money_result', {'success': True, 'money': money})
+    socketio.emit('get_money_result', {'success': True, 'money': money}, to=request.sid)
+
+@socketio.on('verify_token')
+def handle_verify_token(data):
+    if not data.get('token'):
+        socketio.emit('verify_token_result', {'success': False, 'message': 'Token is required.'}, to=request.sid)
+        return
+    if verify_token(data['token']):
+        valid = True
+    else:
+        valid = False
+    socketio.emit('verify_token_result', {'success': True, 'valid': valid}, to=request.sid)
 
 if __name__ == '__main__':
     socketio.run(app, host='0.0.0.0', port=os.getenv("PORT", 5000), debug=True)
