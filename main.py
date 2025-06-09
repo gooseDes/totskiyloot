@@ -44,6 +44,10 @@ socketio = SocketIO(app, cors_allowed_origins='*')
 def index():
     return flask.render_template('index.html')
 
+@app.route('/index')
+def redirect_index():
+    return flask.redirect('/')
+
 @app.route('/games')
 def games():
     return flask.render_template('games/index.html')
