@@ -1,0 +1,15 @@
+.ar9_16 {
+    background-color: rgba(0, 0, 0, 0.5);
+    border-radius: 2svh;
+    height: 90vh;
+    margin-top: 2vh;
+}
+
+h1 {
+    width: 80%;
+}
+
+#avatar {
+    width: 80%;
+    aspect-ratio: 1/1;
+}

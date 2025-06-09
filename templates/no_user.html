@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TotskiyLoot</title>
+    <link rel="stylesheet" href="/static/css/general.css">
+    <link rel="stylesheet" href="/static/css/style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400..800&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/js/all.min.js" defer></script>
+</head>
+<body>
+    <script src="/static/js/general.js"></script>
+    <div class="content" id="content">
+        <div class="navigation_panel">
+            <button class="navigation_button" id="navButton"><i class="fa-solid fa-bars"></i></button>
+            <div class="filler"></div>
+            <button class="navigation_button" id="userButton"><i class="fa-solid fa-user"></i></button>
+        </div>
+        <div class="center_fullwidth">
+            <div class="ar9_16">
+                <h1>Oops, no such user!</h1>
+                <button onclick="goto('index')" class="letsgo_button">Go Back</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="sideNav" class="side_nav">
+        <button id="closeNav" class="close_btn">&times;</button>
+        <a onclick="goto('index')">Home</a>
+        <a onclick="goto('games')">Games</a>
+        <a onclick="goto('contact')">Contact</a>
+    </div>
+</body>
+</html>

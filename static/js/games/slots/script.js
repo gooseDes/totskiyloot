@@ -8,6 +8,12 @@ window.addEventListener("load", function() {
     var money = 1488;
     var actualMoney = 1488;
 
+    socket.emit('get_money', {'token': localStorage.getItem('token')});
+    socket.on('get_money_result', (data) => {
+        money = data.money;
+        actualMoney = data.money;
+    });
+
     socket.on('spin_result', (data) => {
         if (!data.success) {
             alert(data.message);
@@ -54,7 +60,7 @@ window.addEventListener("load", function() {
             }
         });
         setTimeout(() => {
-            money += data.money;
+            money = data.money;
         }, 8000);
     });
     

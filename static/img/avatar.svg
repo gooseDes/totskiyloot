@@ -1,0 +1,9 @@
+<svg version="1.2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+	<title>Новый проект</title>
+	<style>
+		.s0 { fill: none;stroke: #ffffff;stroke-miterlimit:100;stroke-width: 20 } 
+	</style>
+	<path id="Фигура 2" fill-rule="evenodd" class="s0" d="m256 472c-86.3 0-156-28.6-156-64 0-35.4 69.7-64 156-64 86.3 0 156 28.6 156 64 0 35.4-69.7 64-156 64z"/>
+	<path id="Слой 2" fill-rule="evenodd" class="s0" d="m255.5 306c-61.1 0-110.5-49.4-110.5-110.5 0-61.1 49.4-110.5 110.5-110.5 61.1 0 110.5 49.4 110.5 110.5 0 61.1-49.4 110.5-110.5 110.5z"/>
+	<path id="Фигура 1" fill-rule="evenodd" class="s0" d="m256 496c-132.7 0-240-107.3-240-240 0-132.7 107.3-240 240-240 132.7 0 240 107.3 240 240 0 132.7-107.3 240-240 240z"/>
+</svg>

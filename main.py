@@ -5,6 +5,7 @@ from random import randint
 import mysql.connector
 import jwt
 import datetime
+import os
 
 SECRET_KEY = 'totskiyloot_epta'
 
@@ -20,6 +21,8 @@ def verify_token(token):
         payload = jwt.decode(token, SECRET_KEY, algorithms=['HS256'])
         return payload['username']
     except jwt.ExpiredSignatureError:
+        return None
+    except jwt.InvalidTokenError:
         return None
 
 db = mysql.connector.connect(
@@ -55,6 +58,14 @@ def singin():
 @app.route('/signup')
 def singup():
     return flask.render_template('signup.html')
+
+@app.route('/profile/<username>')
+def user(username):
+    cursor.execute("SELECT * FROM users WHERE username = %s", (username,))
+    user = cursor.fetchone()
+    if not user:
+        return flask.render_template('no_user.html'), 404
+    return flask.render_template('profile.html', username=user[1], money=user[3])
 
 @socketio.on('connect')
 def handle_connect():
@@ -103,13 +114,48 @@ def handle_message(data):
         socketio.emit('spin_result', {'success': False, 'message': 'Token is required.'})
         return
     spin_result = randint(0, 100)
+    username = verify_token(data['token'])
+    if not username:
+        socketio.emit('spin_result', {'success': False, 'message': 'Invalid or expired token.'})
+        return
+    cursor.execute("SELECT money FROM users WHERE username = %s", (username,))
+    money = cursor.fetchone()
+    if not money:
+        socketio.emit('spin_result', {'success': False, 'message': 'User not found.'})
+        return
+    money = money[0]
     if spin_result < 90:
-        socketio.emit('spin_result', {'success': True, 'money': -150, 'result': 'lose'})
+        success = True
+        money -= 150
+        result = 'lose'
     elif spin_result <= 99:
-        socketio.emit('spin_result', {'success': True, 'money': 1000, 'result': 'win'})
+        success = True
+        money += 1000
+        result = 'win'
     else:
-        socketio.emit('spin_result', {'success': True, 'money': 10000, 'result': 'jackpot'})
+        success = True
+        money += 10000
+        result = 'jackpot'
+    socketio.emit('spin_result', {'success': success, 'money': money, 'result': result})
+    cursor.execute("UPDATE users SET money = %s WHERE username = %s", (money, username))
+    db.commit()
 
+@socketio.on('get_money')
+def handle_get_money(data):
+    if not data.get('token'):
+        socketio.emit('get_money_result', {'success': False, 'message': 'Token is required.'})
+        return
+    username = verify_token(data['token'])
+    if not username:
+        socketio.emit('get_money_result', {'success': False, 'message': 'Invalid or expired token.'})
+        return
+    cursor.execute("SELECT money FROM users WHERE username = %s", (username,))
+    money = cursor.fetchone()
+    if not money:
+        socketio.emit('get_money_result', {'success': False, 'message': 'User not found.'})
+        return
+    money = money[0]
+    socketio.emit('get_money_result', {'success': True, 'money': money})
 
 if __name__ == '__main__':
-    socketio.run(app, host='0.0.0.0', port=5000, debug=True)
+    socketio.run(app, host='0.0.0.0', port=os.getenv("PORT", 5000), debug=True)
