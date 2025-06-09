@@ -38,7 +38,7 @@ cursor = db.cursor()
 
 app = flask.Flask(__name__)
 
-socketio = SocketIO(app, cors_allowed_origins='*')
+socketio = SocketIO(app, async_mode='threading', cors_allowed_origins='*')
 
 @app.route('/')
 def index():

@@ -5,6 +5,7 @@ window.addEventListener('load', function() {
         logout_button.addEventListener('click', () => {
             localStorage.removeItem('username');
             localStorage.removeItem('token');
+            goto('/signin');
         });
     }
 });
