@@ -11,10 +11,7 @@ import os
 from queue import Queue
 from threading import Thread
 import time
-import base64
 from PIL import Image
-import imghdr
-import io
 
 SECRET_KEY = 'totskiyloot_epta'
 DEBUG = True
