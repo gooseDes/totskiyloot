@@ -1,5 +1,14 @@
 window.addEventListener("load", function() {
     const socket = io(`${location.protocol}//${location.host}`);
+
+    const last_slots_bet = localStorage.getItem('lastSlotsBet');
+    const bet_input = document.getElementById('bet-input');
+    if (last_slots_bet) {
+        bet_input.value = last_slots_bet;
+    } else {
+        bet_input.value = 0;
+    }
+
     document.getElementById('exitButton').addEventListener("click", function() {
         goto('/games');
     });
@@ -68,7 +77,8 @@ window.addEventListener("load", function() {
             openPopup('signin-first-popup');
             return;
         }
-        socket.emit('spin', {'token': localStorage.getItem('token')});
+        socket.emit('spin', {'token': localStorage.getItem('token'), 'bet': parseInt(document.getElementById('bet-input').value)});
+        localStorage.setItem('lastSlotsBet', parseInt(document.getElementById('bet-input').value));
         setTimeout(function() {
             document.getElementById('spinButton').classList.remove('spinning');
         }, 2000)

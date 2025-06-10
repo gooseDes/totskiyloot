@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TL - Home</title>
+    <title>TL - Slots</title>
     <link rel="stylesheet" href="/static/css/general.css">
     <link rel="stylesheet" href="/static/css/games/slots/style.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -26,6 +26,15 @@
         <div id="machineTopPanel"></div>
         <div id="machineBottomPanel"></div>
         <button id="spinButton"><i class="fa-solid fa-rotate"></i></button>
+
+        <div id="bet-div">
+            <h1>Bet</h1>
+            <div id="bet-input-div">
+                <button id="bet-button" onclick="const input = document.getElementById('bet-input'); input.value = parseInt(input.value)-25">-</button>
+                <input type="number" id="bet-input" value="200">
+                <button id="bet-button" onclick="const input = document.getElementById('bet-input'); input.value = parseInt(input.value)+25">+</button>
+            </div>
+        </div>
     </div>
 
     <div class="popup" id="signin-first-popup">

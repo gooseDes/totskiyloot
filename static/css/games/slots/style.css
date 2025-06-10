@@ -22,6 +22,8 @@ button:hover {
     width: 15%;
     aspect-ratio: 1/1;
     border-radius: 1svh;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
 }
 
 #spinButton {
@@ -31,10 +33,12 @@ button:hover {
     bottom: 5vh;
     width: 20%;
     aspect-ratio: 1/1;
-    border-radius: 1svh;
+    border-radius: 2svh;
     border: none;
     color: #fff;
     font-size: 7svh;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
 }
 
 .spinning {
@@ -43,18 +47,23 @@ button:hover {
 
 @keyframes spinButtonAnim {
     from {
-        border-radius: 2vw;
+        border-radius: 2svh;
         rotate: 0deg;
+        translate: 0 0;
     }
     25% {
         border-radius: 50%;
     }
+    50% {
+        translate: 0 50%;
+    }
     75% {
-        border-radius: 2vw;
+        border-radius: 2svh;
     }
     to {
         rotate: 1440deg;
-        border-radius: 2vw;
+        border-radius: 2svh;
+        translate: 0 0;
     }
 }
 
@@ -65,15 +74,14 @@ button:hover {
     width: 95%;
     height: 10%;
     position: absolute;
-    left: 5%;
 }
 
 #machineTopPanel {
-    top: 10%;
+    top: 15%;
 }
 
 #machineBottomPanel {
-    bottom: 45%;
+    bottom: 40%;
 }
 
 #machineScreen {
@@ -83,8 +91,7 @@ button:hover {
     width: 80%;
     height: 22.5%;
     position: absolute;
-    left: 7%;
-    top: 17%;
+    top: 22%;
     border: 10px #000 solid;
     color: #fff;
     text-align: center;
@@ -96,6 +103,8 @@ button:hover {
     padding-left: 2svh;
     padding-right: 2svh;
     gap: 0.5svh;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
 }
 
 .slot_div {
@@ -183,4 +192,67 @@ html, body {
 a {
     color: cornflowerblue;
     font-style: italic;
+}
+
+#bet-div {
+    position: absolute;
+    bottom: 20%;
+    background-color: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border-radius: 2svh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+}
+
+#bet-div h1 {
+    background: none;
+}
+
+#bet-input-div {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: row;
+    padding: 1svh;
+}
+
+#bet-input {
+    border: 0.5svh white solid;
+    border-radius: 1svh;
+    background: none;
+    font-family: 'Baloo 2';
+    font-size: 3svh;
+    color: #fff;
+    margin: 1svh;
+    text-align: center;
+    width: 80%;
+}
+
+#bet-button {
+    font-size: 3svh;
+    aspect-ratio: 1/1;
+    margin: 1svh;
+    width: 4svh;
+    background: none;
+    color: white;
+    border: none;
+}
+
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+input[type="number"] {
+  -moz-appearance: textfield;
+}
+
+h1 {
+    margin: 0;
+    margin-top: 1svh;
+    padding: 0;
 }

@@ -93,12 +93,7 @@ app = flask.Flask(__name__)
 app.config['UPLOAD_FOLDER'] = './static/avatars'
 app.config['MAX_CONTENT_LENGTH'] = 3 * 1024 * 1024
 
-if DEBUG:
-    async_mode = 'threading'
-else:
-    async_mode = 'eventlet'
-
-socketio = SocketIO(app, async_mode=async_mode, cors_allowed_origins='*')
+socketio = SocketIO(app, async_mode='threading', cors_allowed_origins='*')
 
 @app.route('/')
 def index():
@@ -216,6 +211,13 @@ def process_spin(data, sid):
     if not data.get('token'):
         socketio.emit('spin_result', {'success': False, 'message': 'Token is required.'}, to=sid)
         return
+    if not data.get('bet'):
+        socketio.emit('spin_result', {'success': False, 'message': 'Bet is required.'}, to=sid)
+        return
+    bet = data['bet']
+    if bet < 10:
+        socketio.emit('spin_result', {'success': False, 'message': 'Minimal bet is 10 coins.'}, to=sid)
+        return
     spin_result = randint(0, 100)
     username = verify_token(data['token'])
     if not username:
@@ -231,15 +233,15 @@ def process_spin(data, sid):
     money = money[0]
     if spin_result < 90:
         success = True
-        money -= 150
+        money -= bet
         result = 'lose'
     elif spin_result <= 99:
         success = True
-        money += 1000
+        money += bet*5
         result = 'win'
     else:
         success = True
-        money += 10000
+        money += bet*50
         result = 'jackpot'
     socketio.emit('spin_result', {'success': success, 'money': money, 'result': result}, to=sid)
     cursor.execute("UPDATE users SET money = %s WHERE username = %s", (money, username))
@@ -389,8 +391,6 @@ def task_worker():
             last_requests.clear()
 
 def run():
-    import eventlet
-    import eventlet.wsgi
     Thread(target=task_worker, daemon=True).start()
     socketio.run(app, host='0.0.0.0', port=os.getenv("PORT", 5000), debug=DEBUG)
 

@@ -1,0 +1,4 @@
+run.sh
+static/avatars/*.webp
+__pycache__
+__pycache__/*
