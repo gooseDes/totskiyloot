@@ -15,7 +15,7 @@ window.addEventListener("load", function() {
 
     socket.on('spin_result', (data) => {
         if (!data.success) {
-            alert(data.message);
+            showError(data.message);
             return;
         }
         let result_numbers = [];

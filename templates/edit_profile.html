@@ -6,14 +6,17 @@
     <title>TotskiyLoot</title>
     <link rel="stylesheet" href="/static/css/general.css">
     <link rel="stylesheet" href="/static/css/profile.css">
+    <link rel="stylesheet" href="/static/css/edit_profile.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400..800&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/js/all.min.js" defer></script>
 </head>
 <body>
+    <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
     <script src="/static/js/general.js"></script>
-    <script src="/static/js/profile.js"></script>
+    <script src="/static/js/edit_profile.js"></script>
+    <input type="file" id="hiddenFileInput" accept="image/*">
     <div class="content" id="content">
         <div class="navigation_panel">
             <button class="navigation_button" id="navButton"><i class="fa-solid fa-bars"></i></button>
@@ -23,13 +26,18 @@
         <div class="center_fullwidth">
             <div class="ar9_16">
                 <div id="profile">
-                    <img src="/static/avatars/{{username}}.webp" onerror="this.src='/static/img/avatar.svg'" id="avatar">
-                    <h1 id="username">{{username}}</h1>
+                    <div class="edit-div" id="avatar-edit"><img src="/static/avatars/{{username}}.webp" onerror="this.src='/static/img/avatar.svg'" id="avatar"><i id="pencil" class="fa-solid fa-pencil"></i></div>
+                    <div class="edit-div"><h1 id="username">{{username}}</h1><i id="pencil" class="fa-solid fa-pencil"></i></div>
+                    <div id="username-input-div">
+                        <input type="text" id="username-input">
+                        <button id="username-input-confirm"><i class="fa-solid fa-check"></i></button>
+                    </div>
                 </div>
-                <div class="money_counter"><i class="fa-solid fa-coins"></i><p id="money">{{money}}</p></div>
-                <p id="description">{{description}}</p>
-                <button class="logout" id="logout_button"><i class="fa-solid fa-right-from-bracket"></i></button>
-                <button class="edit" id="edit_button"><i class="fa-solid fa-pencil"></i></button>
+                <div class="edit-div" id="description-edit"><p id="description">{{description}}</p><i id="pencil" class="fa-solid fa-pencil"></i></div>
+                <div id="description-input-div">
+                    <input type="text" id="description-input">
+                    <button id="description-input-confirm"><i class="fa-solid fa-check"></i></button>
+                </div>
             </div>
         </div>
     </div>

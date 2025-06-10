@@ -1,6 +1,7 @@
 import flask
-from flask import request
+from flask import request, jsonify
 from flask_socketio import SocketIO
+from werkzeug.utils import secure_filename
 from bcrypt import gensalt, hashpw, checkpw
 from random import randint
 from mysql.connector import pooling
@@ -10,6 +11,10 @@ import os
 from queue import Queue
 from threading import Thread
 import time
+import base64
+from PIL import Image
+import imghdr
+import io
 
 SECRET_KEY = 'totskiyloot_epta'
 DEBUG = True
@@ -41,6 +46,10 @@ def verify_token(token):
         return None
     except jwt.InvalidTokenError:
         return None
+    
+def allowed_file(filename):
+    return '.' in filename and \
+        filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 db_pool = pooling.MySQLConnectionPool(pool_name="mypool",
                                       pool_size=32,
@@ -60,7 +69,32 @@ def request_processed(sid):
     global last_requests
     last_requests[sid] = time.time()
 
+ALLOWED_SYMBOLS = 'abcdefghijklmnopqrstuvwxyz_0123456789'
+ALLOWED_SYMBOLS_DESK = 'abcdefghijklmnopqrstuvwxyz_0123456789 &*%$@!.,'
+ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'webp'}
+
+def check_nickname(username):
+    if len(username) <= 0:
+        return False
+    if len(username) > 16:
+        return False
+    for i in range(len(username)):
+        if not username[i] in ALLOWED_SYMBOLS:
+            return False
+    return True
+
+def check_description(description):
+    if len(description) > 256:
+        return False
+    for i in range(len(description)):
+        if not description[i] in ALLOWED_SYMBOLS_DESK:
+            return False
+    return True
+
 app = flask.Flask(__name__)
+
+app.config['UPLOAD_FOLDER'] = './static/avatars'
+app.config['MAX_CONTENT_LENGTH'] = 3 * 1024 * 1024
 
 if DEBUG:
     async_mode = 'threading'
@@ -103,7 +137,19 @@ def user(username):
         return flask.render_template('no_user.html'), 404
     cursor.close()
     conn.close()
-    return flask.render_template('profile.html', username=user[1], money=user[3])
+    return flask.render_template('profile.html', username=user[1], money=user[3], description=user[4])
+
+@app.route('/profile/edit/<username>')
+def edit_profile(username):
+    conn = get_connection()
+    cursor = conn.cursor()
+    cursor.execute("SELECT * FROM users WHERE username = %s", (username,))
+    user = cursor.fetchone()
+    if not user:
+        return flask.render_template('no_user.html'), 404
+    cursor.close()
+    conn.close()
+    return flask.render_template('edit_profile.html', username=user[1], description=user[4])
 
 @socketio.on('connect')
 def handle_connect():
@@ -118,6 +164,9 @@ def process_registration(data, sid):
         socketio.emit('reg_result', {'success': False, 'message': 'Username and password are required.'}, to=sid)
         return
     username = data['username']
+    if not check_nickname(username):
+        socketio.emit('reg_result', {'success': False, 'message': 'Username contains prohibited characters or too long.'}, to=sid)
+        return
     password = data['password']
     conn = get_connection()
     cursor = conn.cursor()
@@ -129,8 +178,9 @@ def process_registration(data, sid):
     salt = gensalt()
     password = hashpw(password, salt)
     password = password.decode('utf-8')
-    cursor.execute("INSERT INTO users (username, password) VALUES (%s, %s)", (username, password))
+    cursor.execute("INSERT INTO users (username, password, money, description) VALUES (%s, %s, %s, %s)", (username, password, 1488, 'no description',))
     socketio.emit('reg_result', {'success': True, 'message': 'Registration successful!', 'token': create_token(username)}, to=sid)
+    conn.commit()
     cursor.close()
     conn.close()
     request_processed(sid)
@@ -239,6 +289,93 @@ def process_verify_token(data, sid):
     else:
         valid = False
     socketio.emit('verify_token_result', {'success': True, 'valid': valid}, to=sid)
+    request_processed(sid)
+
+@app.route('/upload-avatar', methods=['POST'])
+def upload_avatar():
+    token = request.form.get('token')
+    file = request.files.get('avatar')
+
+    if not token or not file:
+        return jsonify(success=False, message='Token and file is required.')
+
+    if not allowed_file(file.filename):
+        return jsonify(success=False, message='Invalid file type.')
+
+    try:
+        img = Image.open(file.stream).convert('RGB')
+        webp_filename = f"{verify_token(token)}.webp"
+        save_path = os.path.join(app.config['UPLOAD_FOLDER'], webp_filename)
+        img.save(save_path, 'webp', quality=80)
+        return jsonify(success=True, avatar_url=f"/static/avatars/{webp_filename}")
+    except Exception as e:
+        return jsonify(success=False, message=f"Image conversion failed: {str(e)}")
+
+@socketio.on('change_username')
+def handle_change_username(data):
+    task_queue.put((process_change_username, [data, request.sid]))
+
+def process_change_username(data, sid):
+    if not data.get('token'):
+        socketio.emit('change_username_result', {'success': False, 'message': 'Token is required.'}, to=sid)
+        return
+    if not data.get('username'):
+        socketio.emit('change_username_result', {'success': False, 'message': 'Username is required.'}, to=sid)
+        return
+    token = data['token']
+    new_username = data['username']
+    if not check_nickname(new_username):
+        socketio.emit('change_username_result', {'success': False, 'message': 'Username contains prohibited characters or too long.'}, to=sid)
+        return
+    username = verify_token(token)
+    if not username:
+        socketio.emit('change_username_result', {'success': False, 'message': 'Invalid or expired token.'}, to=sid)
+        return
+    conn = get_connection()
+    cursor = conn.cursor()
+    cursor.execute("SELECT * FROM users WHERE username = %s", (new_username,))
+    if cursor.fetchone():
+        socketio.emit('change_username_result', {'success': False, 'message': 'Username is already taken.'}, to=sid)
+        return
+    cursor.execute("UPDATE users SET username = %s WHERE username = %s", (new_username, username,))
+    conn.commit()
+    socketio.emit('change_username_result', {'success': True, 'token': create_token(new_username)}, to=sid)
+    cursor.close()
+    conn.close()
+    if os.path.exists(f'./static/avatars/{username}.webp'):
+        try:
+            os.rename(f'./static/avatars/{username}.webp', f'./static/avatars/{new_username}.webp')
+        except:
+            pass
+    request_processed(sid)
+
+@socketio.on('change_description')
+def handle_change_description(data):
+    task_queue.put((process_change_description, [data, request.sid]))
+
+def process_change_description(data, sid):
+    if not data.get('token'):
+        socketio.emit('change_description_result', {'success': False, 'message': 'Token is required.'}, to=sid)
+        return
+    if not data.get('description'):
+        socketio.emit('change_description_result', {'success': False, 'message': 'Description is required.'}, to=sid)
+        return
+    token = data['token']
+    description = data['description']
+    if not check_description(description):
+        socketio.emit('change_description_result', {'success': False, 'message': 'Description contains prohibited characters or too long.'}, to=sid)
+        return
+    username = verify_token(token)
+    if not username:
+        socketio.emit('change_description_result', {'success': False, 'message': 'Invalid or expired token.'}, to=sid)
+        return
+    conn = get_connection()
+    cursor = conn.cursor()
+    cursor.execute("UPDATE users SET description = %s WHERE username = %s", (description, username,))
+    conn.commit()
+    socketio.emit('change_description_result', {'success': True}, to=sid)
+    cursor.close()
+    conn.close()
     request_processed(sid)
 
 def task_worker():

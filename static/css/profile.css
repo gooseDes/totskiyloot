@@ -23,29 +23,37 @@ h1 {
     align-items: center;
     flex-direction: column;
     margin: 2svh;
+    padding: 0 2svh;
+    width: 80%;
 }
 
 #avatar {
-    width: 80%;
+    width: 100%;
     aspect-ratio: 1/1;
-    margin-top: 1svh;
+    margin: 1svh;
+    margin-bottom: 0;
+    border-radius: 2svh;
 }
 
 .logout {
     background-color: rgba(0, 0, 0, 0.05);
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
-    border-radius: 2svh;
-    border: 1svh white solid;
+    border-radius: 50%;
+    border: none;
     color: red;
     font-weight: bold;
-    font-size: 5svh;
+    font-size: 3svh;
     font-family: 'Baloo 2';
     margin: 2svh;
     transition: all 0.2s ease;
     position: absolute;
     bottom: 0px;
-    right: 0px;
+    left: 0px;
+    aspect-ratio: 1/1;
+    width: 5svh;
+    justify-content: center;
+    align-items: center;
     display: none;
 }
 
@@ -53,4 +61,41 @@ h1 {
     scale: 1.1;
     rotate: 15deg;
     filter: brightness(2);
+}
+
+.edit {
+    background-color: rgba(0, 0, 0, 0.05);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border-radius: 50%;
+    border: none;
+    color: rgb(255, 255, 255);
+    font-weight: bold;
+    font-size: 3svh;
+    font-family: 'Baloo 2';
+    margin: 2svh;
+    transition: all 0.2s ease;
+    position: absolute;
+    bottom: 0px;
+    right: 0px;
+    width: 5svh;
+    aspect-ratio: 1/1;
+    justify-content: center;
+    align-items: center;
+    display: none;
+}
+
+.edit:hover {
+    scale: 1.1;
+    rotate: 15deg;
+    filter: brightness(2);
+}
+
+#description {
+    width: 80%;
+    margin-top: 2svh;
+}
+
+#description-edit {
+    width: 80%;
 }

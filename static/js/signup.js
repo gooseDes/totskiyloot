@@ -6,7 +6,7 @@ window.addEventListener("load", function() {
             localStorage.setItem("token", data.token);
             goto('index');
         } else {
-            alert(data.message);
+            showError(data.message);
         }
     });
     document.getElementById("signin_button").addEventListener("click", function() {
