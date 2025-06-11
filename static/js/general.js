@@ -111,6 +111,7 @@ function showError(text) {
         content.classList.add('popup-content');
         popup.appendChild(content);
         const error = document.createElement('p');
+        error.id = 'popup-error-p';
         error.textContent = text;
         content.appendChild(error);
         const close = document.createElement('button');
@@ -121,6 +122,8 @@ function showError(text) {
         closeIcon.classList.add('fa-solid');
         closeIcon.classList.add('fa-xmark');
         close.appendChild(closeIcon);
+    } else  {
+        document.getElementById('popup-error-p').textContent = text;
     }
     openPopup('error-popup');
 }

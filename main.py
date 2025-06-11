@@ -1,7 +1,6 @@
 import flask
 from flask import request, jsonify
 from flask_socketio import SocketIO
-from werkzeug.utils import secure_filename
 from bcrypt import gensalt, hashpw, checkpw
 from random import randint
 from mysql.connector import pooling
