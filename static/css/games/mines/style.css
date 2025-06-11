@@ -60,23 +60,67 @@ button:hover {
     gap: 0.5svh;
 }
 
-.cell {
-    background: linear-gradient(45deg, blueviolet, rgb(121, 30, 207));
+.cell-div {
     width: auto;
     height: auto;
     aspect-ratio: 1/1;
-    transform-style: preserve-3d;
-    transition: transform 0.3s ease-in-out;
 }
 
-.open {
+.cell {
+    position: absolute;
+    background: linear-gradient(45deg, blueviolet, rgb(121, 30, 207));
+    width: 12%;
+    height: auto;
+    aspect-ratio: 1/1;
+    transform-style: preserve-3d;
+    border-radius: 0.5svh;
+    transition: transform 0.15s ease-in;
+}
+
+.cell-back {
+    position: absolute;
     background: rgba(0, 0, 0, 0.2);
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
     background-size: 100% 100%;
     border-radius: 1svh;
     text-align: center;
-    display: flex;
+    width: 12%;
+    height: auto;
+    aspect-ratio: 1/1;
+    font-size: 4vh;
+    font-weight: 600;
+    display: none;
     justify-content: center;
     align-items: center;
+    transform: rotateZ(5deg);
+}
+
+.open {
+    animation: open-anim 0.8s forwards cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+@keyframes open-anim {
+    from {
+        transform: rotateY(90deg) rotateZ(2.5deg);
+        scale: 1
+    }
+    25% {
+        scale: 1;
+    }
+    50% {
+        transform: rotateY(0deg) rotateZ(5deg);
+    }
+    60% {
+        scale: 2.5;
+        transform: rotateZ(-5deg);
+    }
+    75% {
+        transform: rotateZ(-5deg);
+    }
+    100% {
+        scale: 1;
+        transform: rotateZ(5deg);
+    }
+
 }

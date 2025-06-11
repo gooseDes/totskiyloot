@@ -3,7 +3,7 @@ from flask import request, jsonify
 from flask_socketio import SocketIO
 from bcrypt import gensalt, hashpw, checkpw
 from random import randint
-from mysql.connector import pooling
+import mysql.connector
 import jwt
 import datetime
 import os
@@ -47,19 +47,16 @@ def allowed_file(filename):
     return '.' in filename and \
         filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
-db_pool = pooling.MySQLConnectionPool(pool_name="mypool",
-                                      pool_size=32,
-                                      host="localhost",
-                                      user="root",
-                                      password="root",
-                                      database="totskiyloot")
+connection = mysql.connector.connect(
+    host='localhost',
+    user='root',
+    password='root',
+    database='totskiyloot',
+    port=3306
+)
 
 def get_connection():
-    return db_pool.get_connection()
-
-def get_cursor():
-    conn = db_pool.get_connection()
-    return conn.cursor()
+    return connection
 
 def request_processed(sid):
     global last_requests
@@ -259,6 +256,60 @@ def process_spin(data, sid, ip):
     cursor.close()
     conn.close()
     request_processed(sid)
+
+@socketio.on('generate_mines')
+def handle_generate_mines(data):
+    ip = request.remote_addr
+    sid = request.sid
+    task_queue.put((process_generate_mines, [data, sid, ip]))
+
+def process_generate_mines(data, sid, ip):
+    if not data.get('token'):
+        socketio.emit('generate_mines_result', {'success': False, 'message': 'Token is required.'}, to=sid)
+        return
+    if not data.get('bet'):
+        socketio.emit('generate_mines_result', {'success': False, 'message': 'Bet is required.'}, to=sid)
+        return
+    if not data.get('amount'):
+        socketio.emit('generate_mines_result', {'success': False, 'message': 'Amount is required.'}, to=sid)
+        return
+    token = data['token']
+    bet = data['token']
+    amount = data['amount']
+    username = verify_token(token)
+    if not username:
+        socketio.emit('generate_mines_result', {'success': False, 'message': 'Invalid or expired token.'}, to=sid)
+        return
+    conn = get_connection()
+    cursor = conn.cursor()
+    cursor.execute('SELECT money FROM users WHERE username = %s', (username,))
+    money=cursor.fetchall()
+    if not money:
+        socketio.emit('generate_mines_result', {'success': False, 'message': 'User not found.'}, to=sid)
+        return
+    money = money[0]
+    mines = []
+    start_bet = bet
+    for i in range(amount):
+        rand = randint(0, 5)
+        if rand == 0:
+            mines.append('x0')
+            bet = 0
+        elif rand <= 2:
+            mines.append('+0.5')
+            bet += 0.5*start_bet
+        elif rand <= 4:
+            mines.append('-0.5')
+            bet -= 0.5*start_bet
+        else:
+            mines.append('x2')
+            bet *= 2
+    money += bet
+    cursor.execute('UPDATE users SET money = %s WHERE username = %s', (money, username,))
+    conn.commit()
+    socketio.emit('generate_mines_result', {'success': True, 'mines': mines}, to=sid)
+    cursor.close()
+    conn.close()
 
 @socketio.on('get_money')
 def handle_get_money(data):
