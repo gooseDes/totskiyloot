@@ -243,7 +243,9 @@ a:hover {
 
 .money_counter {
     font-size: 4vh;
-    background-color: rgba(0, 0, 0, 0.5);
+    background-color: rgba(0, 0, 0, 0.05);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
     border-radius: 1svh;
     padding: 0 1.5svh;
     margin: 0;
@@ -307,6 +309,7 @@ a:hover {
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
 }
+
 .popup-header {
     z-index: 9999;
     font-size: 8svh;
@@ -317,6 +320,7 @@ a:hover {
     text-align: center;
     background-color: rgb(22, 22, 22);
 }
+
 .popup-content {
     z-index: 9999;
     font-size: 5svh;
@@ -330,12 +334,15 @@ a:hover {
     flex-direction: column;
     overflow: hidden;
 }
+
 .popup-show {
     animation: popup-show 0.8s cubic-bezier(0.68, -0.55, 0.27, 1.55) forwards;
 }
+
 .popup-hide {
     animation: popup-hide 0.3s ease-in-out forwards;
 }
+
 @keyframes popup-show {
     from {
     height: 0vh;
@@ -344,6 +351,7 @@ a:hover {
     height: 80vh;
     }
 }
+
 @keyframes popup-hide {
     from {
     height: 80vh;
@@ -352,6 +360,7 @@ a:hover {
     height: 0vh;
     }
 }
+
 .popup-close {
     z-index: 9999;
     position: absolute;
@@ -367,9 +376,37 @@ a:hover {
     cursor: pointer;
     transition: all 0.2s ease;
 }
+
 .popup-close:hover {
     scale: 1.1;
 }
+
 .popup-close:active {
     scale: 0.9;
+}
+
+#userIcon {
+    aspect-ratio: 1/1;
+    height: 5vh;
+    border-radius: 1svh;
+}
+
+#userButton {
+    aspect-ratio: 1/1;
+    height: 6vh;
+    margin-top: 0;
+    margin-bottom: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#userIconName {
+    background: none;
+    font-family: 'Baloo 2';
+    text-align: right;
+    font-size: 3svh;
+    font-weight: 500;
+    padding: 0 1svh;
+    white-space: nowrap;
 }

@@ -4,71 +4,57 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>TL - Slot Machine</title>
-    <link rel="stylesheet" href="/static/css/general.css">
+    {% include 'basic_links.html' %}
     <link rel="stylesheet" href="/static/css/games/style.css">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400..800&display=swap" rel="stylesheet">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/js/all.min.js" defer></script>
 </head>
 <body>
-    <script src="/static/js/general.js"></script>
     <script src="/static/js/games/script.js"></script>
     <div class="content" id="content">
-        <div class="navigation_panel">
-            <button class="navigation_button" id="navButton"><i class="fa-solid fa-bars"></i></button>
-            <div class="filler"></div>
-            <button class="navigation_button" id="userButton"><i class="fa-solid fa-user"></i></button>
-        </div>
+        {% include 'nav.html' %}
         <div class="games">
             <div class="game_card" onclick="goto('/games/slots')">
-                <img src="../static/img/game_slots.png" alt="Game">
+                <img src="/static/img/game_slots.png" alt="Game">
                 <h2>Slot Machine</h2>
                 <p>Default slot machine</p>
             </div>
-            <div class="game_card">
-                <img src="../static/img/game_placeholder.png" alt="Game">
-                <h2>Game 2</h2>
-                <p>Lorem ipsum dolor sit amet</p>
+            <div class="game_card" onclick="goto('/games/ball')">
+                <img src="/static/img/game_ball.jpg" alt="Game">
+                <h2>Ball</h2>
+                <p>Watch balls fall(WIP)</p>
+            </div>
+            <div class="game_card" onclick="location.href = 'https://5nights.totskiy.pp.ua'">
+                <img src="/static/img/game_placeholder.png" alt="Game">
+                <h2>Five Nights With Totskiy</h2>
+                <p>Horror game inspired by Hello Neighbor(WIP)</p>
+            </div>
+            <div class="game_card" onclick="location.href = 'https://under.totskiy.pp.ua'">
+                <img src="/static/img/game_placeholder.png" alt="Game">
+                <h2>UnderTotskiy</h2>
+                <p>Example mod for my undertale engine(WIP)</p>
             </div>
             <div class="game_card">
-                <img src="../static/img/game_placeholder.png" alt="Game">
-                <h2>Game 3</h2>
-                <p>Lorem ipsum dolor sit amet</p>
-            </div>
-            <div class="game_card">
-                <img src="../static/img/game_placeholder.png" alt="Game">
-                <h2>Game 4</h2>
-                <p>Lorem ipsum dolor sit amet</p>
-            </div>
-            <div class="game_card">
-                <img src="../static/img/game_placeholder.png" alt="Game">
+                <img src="/static/img/game_placeholder.png" alt="Game">
                 <h2>Game 5</h2>
                 <p>Lorem ipsum dolor sit amet</p>
             </div>
             <div class="game_card">
-                <img src="../static/img/game_placeholder.png" alt="Game">
+                <img src="/static/img/game_placeholder.png" alt="Game">
                 <h2>Game 6</h2>
                 <p>Lorem ipsum dolor sit amet</p>
             </div>
             <div class="game_card">
-                <img src="../static/img/game_placeholder.png" alt="Game">
+                <img src="/static/img/game_placeholder.png" alt="Game">
                 <h2>Game 7</h2>
                 <p>Lorem ipsum dolor sit amet</p>
             </div>
             <div class="game_card">
-                <img src="../static/img/game_placeholder.png" alt="Game">
+                <img src="/static/img/game_placeholder.png" alt="Game">
                 <h2>Game 8</h2>
                 <p>Lorem ipsum dolor sit amet</p>
             </div>
         </div>
     </div>
 
-    <div id="sideNav" class="side_nav">
-        <button id="closeNav" class="close_btn">&times;</button>
-        <a onclick="goto('/')">Home</a>
-        <a onclick="goto('games')">Games</a>
-        <a onclick="goto('contact')">Contact</a>
-    </div>
+    {% include 'side_nav.html' %}
 </body>
 </html>

@@ -72,6 +72,7 @@ window.addEventListener('load', function() {
     const username_input = document.getElementById('username-input');
 
     function confirmUsernameChange() {
+        if (username_input.value == localStorage.getItem('username')) return
         socket.emit('change_username', {'token': localStorage.getItem('token'), 'username': username_input.value})
     }
 
@@ -102,5 +103,9 @@ window.addEventListener('load', function() {
 
     description_input.addEventListener('change', confirmDescriptionChange);
 
-    document.getElementById('username-input-confirm').addEventListener('click', confirmDescriptionChange);
+    document.getElementById('description-input-confirm').addEventListener('click', confirmDescriptionChange);
+
+    document.getElementById('done-button').addEventListener('click', function() {
+        goto(`/profile/${localStorage.getItem('username')}`);
+    });
 });

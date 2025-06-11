@@ -94,3 +94,30 @@
     background-color: rgb(0, 0, 0, 0.5);
     border-radius: 2svh;
 }
+
+#done-button {
+    background-color: rgba(0, 0, 0, 0.05);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border-radius: 50%;
+    border: none;
+    color: rgb(255, 255, 255);
+    font-weight: bold;
+    font-size: 3svh;
+    font-family: 'Baloo 2';
+    margin: 2svh;
+    transition: all 0.2s ease;
+    position: absolute;
+    bottom: 0px;
+    right: 0px;
+    width: 5svh;
+    aspect-ratio: 1/1;
+    justify-content: center;
+    align-items: center;
+}
+
+#done-button:hover {
+    scale: 1.1;
+    rotate: 15deg;
+    filter: brightness(2);
+}

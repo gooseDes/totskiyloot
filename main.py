@@ -17,7 +17,7 @@ SECRET_KEY = 'totskiyloot_epta'
 DEBUG = True
 
 task_queue = Queue()
-DELAY_BETWEEN_TASKS = 0.0001
+DELAY_BETWEEN_TASKS = 0.0005
 DELAY_BETWEEN_REQUESTS = 0.1
 last_requests_reload = time.time()
 
@@ -67,7 +67,7 @@ def request_processed(sid):
     last_requests[sid] = time.time()
 
 ALLOWED_SYMBOLS = 'abcdefghijklmnopqrstuvwxyz_0123456789'
-ALLOWED_SYMBOLS_DESK = 'abcdefghijklmnopqrstuvwxyz_0123456789 &*%$@!.,'
+ALLOWED_SYMBOLS_DESK = "abcdefghijklmnopqrstuvwxyzABCDRFGHIJKLMNOPQRSTUVWXYZ_0123456789 :&*%$@!?.,-+=;()[]'"
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'webp'}
 
 def check_nickname(username):
@@ -149,9 +149,11 @@ def handle_connect():
 
 @socketio.on('reg')
 def handle_registration(data):
-    task_queue.put((process_registration, [data, request.sid]))
+    ip = request.remote_addr
+    sid = request.sid
+    task_queue.put((process_registration, [data, sid, ip]))
 
-def process_registration(data, sid):
+def process_registration(data, sid, ip):
     if not data.get('username') or not data.get('password'):
         socketio.emit('reg_result', {'success': False, 'message': 'Username and password are required.'}, to=sid)
         return
@@ -179,9 +181,11 @@ def process_registration(data, sid):
 
 @socketio.on('login')
 def handle_login(data):
-    task_queue.put((process_login, [data, request.sid]))
+    ip = request.remote_addr
+    sid = request.sid
+    task_queue.put((process_login, [data, sid, ip]))
 
-def process_login(data, sid):
+def process_login(data, sid, ip):
     if not data.get('username') or not data.get('password'):
         socketio.emit('login_result', {'success': False, 'message': 'Username and password are required.'}, to=sid)
         return
@@ -205,9 +209,11 @@ def process_login(data, sid):
 
 @socketio.on('spin')
 def handle_spin(data):
-    task_queue.put((process_spin, [data, request.sid]))
+    ip = request.remote_addr
+    sid = request.sid
+    task_queue.put((process_spin, [data, sid, ip]))
 
-def process_spin(data, sid):
+def process_spin(data, sid, ip):
     if not data.get('token'):
         socketio.emit('spin_result', {'success': False, 'message': 'Token is required.'}, to=sid)
         return
@@ -217,6 +223,9 @@ def process_spin(data, sid):
     bet = data['bet']
     if bet < 10:
         socketio.emit('spin_result', {'success': False, 'message': 'Minimal bet is 10 coins.'}, to=sid)
+        return
+    if bet > 10000:
+        socketio.emit('spin_result', {'success': False, 'message': 'Maximal bet is 10000 coins.'}, to=sid)
         return
     spin_result = randint(0, 100)
     username = verify_token(data['token'])
@@ -244,6 +253,8 @@ def process_spin(data, sid):
         money += bet*50
         result = 'jackpot'
     socketio.emit('spin_result', {'success': success, 'money': money, 'result': result}, to=sid)
+    if money < -5000:
+        socketio.emit('spin_result', {'success': False, 'message': f'Hi! :3\nYout IP: {ip}\nCollectors are coming for you...'}, to=sid)
     cursor.execute("UPDATE users SET money = %s WHERE username = %s", (money, username))
     conn.commit()
     cursor.close()
@@ -252,9 +263,11 @@ def process_spin(data, sid):
 
 @socketio.on('get_money')
 def handle_get_money(data):
-    task_queue.put((process_get_money, [data, request.sid]))
+    ip = request.remote_addr
+    sid = request.sid
+    task_queue.put((process_get_money, [data, sid, ip]))
 
-def process_get_money(data, sid):
+def process_get_money(data, sid, ip):
     if not data.get('token'):
         socketio.emit('get_money_result', {'success': False, 'message': 'Token is required.'}, to=sid)
         return
@@ -277,9 +290,11 @@ def process_get_money(data, sid):
 
 @socketio.on('verify_token')
 def handle_verify_token(data):
-    task_queue.put((process_verify_token, [data, request.sid]))
+    ip = request.remote_addr
+    sid = request.sid
+    task_queue.put((process_verify_token, [data, sid, ip]))
 
-def process_verify_token(data, sid):
+def process_verify_token(data, sid, ip):
     if not data.get('token'):
         socketio.emit('verify_token_result', {'success': False, 'message': 'Token is required.'}, to=sid)
         return
@@ -312,9 +327,11 @@ def upload_avatar():
 
 @socketio.on('change_username')
 def handle_change_username(data):
-    task_queue.put((process_change_username, [data, request.sid]))
+    ip = request.remote_addr
+    sid = request.sid
+    task_queue.put((process_change_username, [data, sid, ip]))
 
-def process_change_username(data, sid):
+def process_change_username(data, sid, ip):
     if not data.get('token'):
         socketio.emit('change_username_result', {'success': False, 'message': 'Token is required.'}, to=sid)
         return
@@ -350,9 +367,11 @@ def process_change_username(data, sid):
 
 @socketio.on('change_description')
 def handle_change_description(data):
-    task_queue.put((process_change_description, [data, request.sid]))
+    ip = request.remote_addr
+    sid = request.sid
+    task_queue.put((process_change_description, [data, sid, ip]))
 
-def process_change_description(data, sid):
+def process_change_description(data, sid, ip):
     if not data.get('token'):
         socketio.emit('change_description_result', {'success': False, 'message': 'Token is required.'}, to=sid)
         return

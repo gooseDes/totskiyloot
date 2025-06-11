@@ -1,0 +1,13 @@
+<div class="navigation_panel">
+    <button class="navigation_button" id="navButton"><i class="fa-solid fa-bars"></i></button>
+    <div class="filler"></div>
+    <button class="navigation_button" id="userButton"><span id="userIconName"></span><img src="" onerror="this.src='/static/img/avatar.svg'" id="userIcon"></button>
+    <script>
+        document.getElementById('userIcon').src = `/static/avatars/${localStorage.getItem('username')}.webp`;
+        if (localStorage.getItem('username')) {
+            document.getElementById('userIconName').textContent = localStorage.getItem('username');
+        } else {
+            document.getElementById('userIconName').textContent = 'Sign In';
+        }
+    </script>
+</div>
