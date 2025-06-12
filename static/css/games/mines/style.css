@@ -27,7 +27,8 @@
     max-width: 100vw;
     max-height: 177.78vw;
     position: relative;
-    overflow: hidden;
+    overflow-x: visible;
+    overflow-y: hidden;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -72,9 +73,26 @@ button:hover {
     width: 12%;
     height: auto;
     aspect-ratio: 1/1;
+    font-size: 0;
     transform-style: preserve-3d;
     border-radius: 0.5svh;
     transition: transform 0.15s ease-in;
+    animation: cell-spawn forwards 0.5s ease;
+}
+
+@keyframes cell-spawn {
+    from {
+        translate: -20vw -10vh;
+        transform: rotateZ(90deg);
+        scale: 3;
+        opacity: 0;
+    }
+    to {
+        translate: 0 0;
+        transform: rotateZ(0deg);
+        scale: 1;
+        opacity: 1;
+    }
 }
 
 .cell-back {
@@ -94,6 +112,52 @@ button:hover {
     justify-content: center;
     align-items: center;
     transform: rotateZ(5deg);
+}
+
+.setting-div {
+    position: absolute;
+    background-color: rgba(0, 0, 0, 0.2);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border-radius: 2svh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+}
+
+.setting-div h1 {
+    background: none;
+}
+
+.setting-input-div {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: row;
+    padding: 1svh;
+}
+
+.setting-input {
+    border: 0.5svh white solid;
+    border-radius: 1svh;
+    background: none;
+    font-family: 'Baloo 2';
+    font-size: 3svh;
+    color: #fff;
+    margin: 1svh;
+    text-align: center;
+    width: 80%;
+}
+
+.setting-button {
+    font-size: 3svh;
+    aspect-ratio: 1/1;
+    margin: 1svh;
+    width: 4svh;
+    background: none;
+    color: white;
+    border: none;
 }
 
 .open {
@@ -123,4 +187,104 @@ button:hover {
         transform: rotateZ(5deg);
     }
 
+}
+
+#bet-div {
+    top: 15%;
+}
+
+#amount-div {
+    top: 45%;
+}
+
+#start-button {
+    position: absolute;
+    top: 80%;
+    background-color: rgba(0, 0, 0, 0.2);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border-radius: 2svh;
+    border: none;
+    color: white;
+    font-size: 8svh;
+    font-family: 'Baloo 2';
+    font-weight: 600;
+    padding: 0 4svh;
+    border: #fff solid 0.5svh;
+}
+
+.fade-up {
+    animation: fade-up ease forwards 0.6s;
+}
+
+.unfade-up {
+    animation: unfade-up ease forwards 0.6s;
+}
+
+.fade-down {
+    animation: fade-down ease forwards 0.6s;
+}
+
+.unfade-down {
+    animation: unfade-down ease forwards 0.6s;
+}
+
+@keyframes fade-up {
+    from {
+        opacity: 1;
+    }
+    to {
+        translate: 0 -100%;
+        opacity: 0;
+    }
+}
+
+@keyframes fade-down {
+    from {
+        opacity: 1;
+    }
+    to {
+        translate: 0 100%;
+        opacity: 0;
+    }
+}
+
+@keyframes unfade-up {
+    from {
+        translate: 0 -100%;
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes unfade-down {
+    from {
+        translate: 0 100%;
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+#current-win {
+    translate: 0 -57vh;
+    background-color: rgba(0, 0, 0, 0.2);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    animation: unfade-win-up forwards 1s ease;
+    transition: all 0.6s ease;
+}
+
+@keyframes unfade-win-up {
+    from {
+        opacity: 0;
+        translate: 0 -100vh;
+    }
+    to {
+        opacity: 1;
+        translate: 0 -57vh;
+    }
 }

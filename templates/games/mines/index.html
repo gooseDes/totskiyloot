@@ -12,6 +12,23 @@
     <div class="content" id="content">
         <button id="exitButton">&times</button>
         <div class="money_counter"><i class="fa-solid fa-coins"></i><p id="money">1488</p></div>
+        <div class="setting-div" id="bet-div">
+            <h1>Bet</h1>
+            <div class="setting-input-div">
+                <button class="setting-button" onclick="const input = document.getElementById('bet-input'); input.value = parseInt(input.value)-25">-</button>
+                <input type="number" class="setting-input" id="bet-input" value="200">
+                <button class="setting-button" onclick="const input = document.getElementById('bet-input'); input.value = parseInt(input.value)+25">+</button>
+            </div>
+        </div>
+        <div class="setting-div" id="amount-div">
+            <h1>Number of Mines</h1>
+            <div class="setting-input-div">
+                <button class="setting-button" onclick="const input = document.getElementById('amount-input'); input.value = parseInt(input.value)-6">-</button>
+                <input type="number" class="setting-input" id="amount-input" value="36">
+                <button class="setting-button" onclick="const input = document.getElementById('amount-input'); input.value = parseInt(input.value)+6">+</button>
+            </div>
+        </div>
+        <button id="start-button">Start</button>
         <div id="grid"></div>
     </div>
 

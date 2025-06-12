@@ -124,7 +124,6 @@ def user(username):
     if not user:
         return flask.render_template('no_user.html'), 404
     cursor.close()
-    conn.close()
     return flask.render_template('profile.html', username=user[1], money=user[3], description=user[4])
 
 @app.route('/profile/edit/<username>')
@@ -136,7 +135,6 @@ def edit_profile(username):
     if not user:
         return flask.render_template('no_user.html'), 404
     cursor.close()
-    conn.close()
     return flask.render_template('edit_profile.html', username=user[1], description=user[4])
 
 @socketio.on('connect')
@@ -172,7 +170,6 @@ def process_registration(data, sid, ip):
     socketio.emit('reg_result', {'success': True, 'message': 'Registration successful!', 'token': create_token(username)}, to=sid)
     conn.commit()
     cursor.close()
-    conn.close()
     request_processed(sid)
 
 @socketio.on('login')
@@ -200,7 +197,6 @@ def process_login(data, sid, ip):
     else:
         socketio.emit('login_result', {'success': False, 'message': 'Incorrect password.'}, to=sid)
     cursor.close()
-    conn.close()
     request_processed(sid)
 
 @socketio.on('spin')
@@ -254,7 +250,6 @@ def process_spin(data, sid, ip):
     cursor.execute("UPDATE users SET money = %s WHERE username = %s", (money, username))
     conn.commit()
     cursor.close()
-    conn.close()
     request_processed(sid)
 
 @socketio.on('generate_mines')
@@ -274,8 +269,14 @@ def process_generate_mines(data, sid, ip):
         socketio.emit('generate_mines_result', {'success': False, 'message': 'Amount is required.'}, to=sid)
         return
     token = data['token']
-    bet = data['token']
+    bet = data['bet']
     amount = data['amount']
+    if amount > 36:
+        socketio.emit('generate_mines_result', {'success': False, 'message': 'Max number of mines is 36.'}, to=sid)
+        return
+    if amount < 12:
+        socketio.emit('generate_mines_result', {'success': False, 'message': 'Minimal number of mines is 12'}, to=sid)
+        return
     username = verify_token(token)
     if not username:
         socketio.emit('generate_mines_result', {'success': False, 'message': 'Invalid or expired token.'}, to=sid)
@@ -283,11 +284,11 @@ def process_generate_mines(data, sid, ip):
     conn = get_connection()
     cursor = conn.cursor()
     cursor.execute('SELECT money FROM users WHERE username = %s', (username,))
-    money=cursor.fetchall()
+    money = cursor.fetchall()
     if not money:
         socketio.emit('generate_mines_result', {'success': False, 'message': 'User not found.'}, to=sid)
         return
-    money = money[0]
+    money = money[0][0]
     mines = []
     start_bet = bet
     for i in range(amount):
@@ -309,7 +310,6 @@ def process_generate_mines(data, sid, ip):
     conn.commit()
     socketio.emit('generate_mines_result', {'success': True, 'mines': mines}, to=sid)
     cursor.close()
-    conn.close()
 
 @socketio.on('get_money')
 def handle_get_money(data):
@@ -335,7 +335,6 @@ def process_get_money(data, sid, ip):
     money = money[0]
     socketio.emit('get_money_result', {'success': True, 'money': money}, to=sid)
     cursor.close()
-    conn.close()
     request_processed(sid)
 
 @socketio.on('verify_token')
@@ -407,7 +406,6 @@ def process_change_username(data, sid, ip):
     conn.commit()
     socketio.emit('change_username_result', {'success': True, 'token': create_token(new_username)}, to=sid)
     cursor.close()
-    conn.close()
     if os.path.exists(f'./static/avatars/{username}.webp'):
         try:
             os.rename(f'./static/avatars/{username}.webp', f'./static/avatars/{new_username}.webp')
@@ -443,7 +441,6 @@ def process_change_description(data, sid, ip):
     conn.commit()
     socketio.emit('change_description_result', {'success': True}, to=sid)
     cursor.close()
-    conn.close()
     request_processed(sid)
 
 def task_worker():
@@ -461,7 +458,7 @@ def task_worker():
 
 def run():
     Thread(target=task_worker, daemon=True).start()
-    socketio.run(app, host='0.0.0.0', port=os.getenv("PORT", 5000), debug=DEBUG)
+    socketio.run(app, host='0.0.0.0', port=5000, debug=DEBUG)
 
 if __name__ == '__main__':
     run()
