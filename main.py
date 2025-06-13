@@ -277,6 +277,12 @@ def process_generate_mines(data, sid, ip):
     if amount < 12:
         socketio.emit('generate_mines_result', {'success': False, 'message': 'Minimal number of mines is 12'}, to=sid)
         return
+    if bet < 10:
+        socketio.emit('generate_mines_result', {'success': False, 'message': 'Minimal bet is 10 coins.'}, to=sid)
+        return
+    if bet > 10000:
+        socketio.emit('generate_mines_result', {'success': False, 'message': 'Maximal bet is 10000 coins.'}, to=sid)
+        return
     username = verify_token(token)
     if not username:
         socketio.emit('generate_mines_result', {'success': False, 'message': 'Invalid or expired token.'}, to=sid)
@@ -292,14 +298,14 @@ def process_generate_mines(data, sid, ip):
     mines = []
     start_bet = bet
     for i in range(amount):
-        rand = randint(0, 5)
-        if rand == 0:
+        rand = randint(0, 20)
+        if rand <= 0:
             mines.append('x0')
             bet = 0
-        elif rand <= 2:
+        elif rand <= 10:
             mines.append('+0.5')
             bet += 0.5*start_bet
-        elif rand <= 4:
+        elif rand <= 19:
             mines.append('-0.5')
             bet -= 0.5*start_bet
         else:
@@ -352,6 +358,7 @@ def process_verify_token(data, sid, ip):
     else:
         valid = False
     socketio.emit('verify_token_result', {'success': True, 'valid': valid}, to=sid)
+    print('verify_token_result', {'success': True, 'valid': valid}, sid)
     request_processed(sid)
 
 @app.route('/upload-avatar', methods=['POST'])
@@ -458,7 +465,10 @@ def task_worker():
 
 def run():
     Thread(target=task_worker, daemon=True).start()
-    socketio.run(app, host='0.0.0.0', port=5000, debug=DEBUG)
+    if os.path.exists('./fullchain.pem') and os.path.exists('./privkey.pem'):
+        socketio.run(app, host='0.0.0.0', port=5001, debug=DEBUG, ssl_context=('./fullchain.pem', './privkey.pem'))
+    else:
+        socketio.run(app, host='0.0.0.0', port=5000, debug=DEBUG)
 
 if __name__ == '__main__':
     run()

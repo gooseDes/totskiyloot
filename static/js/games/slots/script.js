@@ -57,6 +57,8 @@ window.addEventListener("load", function() {
                     slot.style.transitionDuration = ((i*21)/1000).toString().concat('s');
                     setTimeout(function() {
                         slot.innerHTML = Math.round(Math.random()*9);
+                        const click_sound = new Audio('/static/sounds/click.wav');
+                        click_sound.play();
                         slot.style.height = '100%';
                         slot.style.width = '100%';
                         if (i >= 19) {

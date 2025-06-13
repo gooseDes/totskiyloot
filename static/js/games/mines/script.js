@@ -7,6 +7,10 @@ window.addEventListener('load', function() {
     const amount_div = document.getElementById('amount-div');
     const bet_input = document.getElementById('bet-input');
     const amount_input = document.getElementById('amount-input');
+    const exit_button = document.getElementById('exitButton');
+    exit_button.addEventListener("click", function() {
+        goto('/games');
+    });
 
     var money;
     var actualMoney;
@@ -18,8 +22,10 @@ window.addEventListener('load', function() {
     var game_started = false;
 
     start_button.addEventListener('click', () => {
-        bet = parseInt(bet_input.value);
-        socket.emit('generate_mines', {'token': localStorage.getItem('token'), 'bet': bet, 'amount': parseInt(amount_input.value)});
+        if (!game_started) {
+            bet = parseInt(bet_input.value);
+            socket.emit('generate_mines', {'token': localStorage.getItem('token'), 'bet': bet, 'amount': parseInt(amount_input.value)});
+        }
     });
 
     socket.on('get_money_result', (data) => {
@@ -38,6 +44,7 @@ window.addEventListener('load', function() {
         start_button.classList.add('fade-down');
         amount_div.classList.add('fade-down');
         bet_div.classList.add('fade-up');
+        exit_button.classList.add('fade-up');
         const current_win = document.createElement('h1');
         current_win.id = 'current-win';
         current_win.textContent = 'Current Win: 0';
@@ -53,6 +60,8 @@ window.addEventListener('load', function() {
             cell_div.appendChild(cell);
             cell_div.addEventListener('click', () => {
                 if (cell.textContent != 'open') {
+                    const click_sound = new Audio('/static/sounds/click.wav');
+                    click_sound.play();
                     cell.style.animation = '';
                     cell.style.transform = 'rotateY(90deg) rotateZ(2.5deg)';
                     cell.textContent = 'open';
@@ -101,15 +110,18 @@ window.addEventListener('load', function() {
                     const current_win = document.getElementById('current-win');
                     current_win.style.animation = 'fade-up ease forwards 0.6s';
                     start_button.classList.remove('fade-down');
-                    start_button.classList.add('unfade-up');
+                    start_button.classList.add('unfade-down');
                     amount_div.classList.remove('fade-down');
                     amount_div.classList.add('unfade-down');
                     bet_div.classList.remove('fade-up');
-                    bet_div.classList.add('unfade-down');
+                    bet_div.classList.add('unfade-up');
+                    exit_button.classList.remove('fade-up');
+                    exit_button.classList.add('unfade-up');
                     setTimeout(() => {
-                        start_button.classList.remove('unfade-up');
+                        start_button.classList.remove('unfade-down');
                         amount_div.classList.remove('unfade-down');
-                        bet_div.classList.remove('unfade-down');
+                        bet_div.classList.remove('unfade-up');
+                        exit_button.classList.remove('unfade-up');
                         document.getElementById('content').removeChild(current_win);
                         Array.from(grid.children).forEach((child) => {
                             grid.removeChild(child);
