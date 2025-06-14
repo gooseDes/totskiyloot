@@ -112,6 +112,7 @@ button:hover {
     justify-content: center;
     align-items: center;
     transform: rotateZ(5deg);
+    user-select: none;
 }
 
 .setting-div {

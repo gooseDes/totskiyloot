@@ -3,4 +3,19 @@
     <a onclick="goto('/')">Home</a>
     <a onclick="goto('/games')">Games</a>
     <a onclick="goto('/contact')">Contact</a>
+    <a onclick="goto('/leaderboard')">Leaderboard</a>
 </div>
+
+<div id="chat">
+    <div id="toolbar">
+        <h1 id="chat-title">Chat</h1>
+        <button class="toolbar-button" id="chat-hide-button"><i class="fa-solid fa-caret-up"></i></button>
+        <button class="toolbar-button" id="chat-close-button"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+    <div id="messages"></div>
+    <div id="type-div" class="chat-hide">
+        <input type="text" id="msg-input">
+        <button id="send-button"><i class="fa-solid fa-paper-plane"></i></button>
+    </div>
+</div>
+<script src="/static/js/chat-controller.js"></script>

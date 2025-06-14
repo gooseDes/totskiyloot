@@ -220,7 +220,9 @@ input[type="number"] {
 
 .navigation_panel {
     height: 5vh;
-    background-color: rgb(0, 0, 0, 0.5);
+    background-color: rgb(0, 0, 0, 0.2);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
     border-radius: 1svh;
     padding: 1svh;
     margin: 1svh;
@@ -419,4 +421,209 @@ input[type="number"] {
     font-weight: 500;
     padding: 0 1svh;
     white-space: nowrap;
+}
+
+#chat {
+    position: fixed;
+    left: 5%;
+    top: 85%;
+    width: 300px;
+    height: 600px;
+    background-color: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border-radius: 2svh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    padding: 1svh;
+    overflow: hidden;
+    transition: height 0.5s ease;
+}
+
+.chat-hide {
+    animation: chat-hide 0.5s ease forwards;
+}
+
+.chat-show {
+    animation: chat-show 0.5s ease forwards;
+}
+
+@keyframes chat-hide {
+    from {
+        opacity: 1;
+        display: flex;
+    }
+    99% {
+        opacity: 0;
+    }
+    to {
+        display: none;
+    }
+}
+
+@keyframes chat-show {
+    from {
+        opacity: 0;
+        display: none;
+    }
+    99% {
+        opacity: 1;
+    }
+    to {
+        display: flex;
+    }
+}
+
+#toolbar {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+}
+
+#messages {
+    height: 80%;
+    background-color: rgba(255, 255, 255, 0.1);
+    border-radius: 2svh;
+    width: 100%;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    display: flex;
+    justify-content: start;
+    align-items: center;
+    flex-direction: column;
+    overflow-x: hidden;
+    overflow-y: scroll;
+}
+
+#chat-title {
+    font-size: 3svh;
+    padding: 0;
+    margin: 0;
+    margin-bottom: 1svh;
+    background: none;
+    user-select: none;
+    width: 100%;
+    text-align: center;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#type-div {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 0.5svh;
+    height: 10%;
+    background-color: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    width: 100%;
+    border-radius: 1svh;
+}
+
+#msg-input {
+    height: 60%;
+    width: 80%;
+    margin: 1svh;
+    margin-right: 0;
+    border-radius: 1svh;
+    background-color: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: none;
+    color: rgb(0, 0, 0);
+    font-size: 100%;
+    font-family: 'Baloo 2';
+    padding: 0 1svh;
+    font-weight: 600;
+}
+
+#send-button {
+    width: 20%;
+    height: 60%;
+    margin: 1svh;
+    margin-left: 0;
+    border-radius: 1svh;
+    background-color: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: none;
+    color: rgb(0, 0, 0);
+    font-size: 100%;
+}
+
+.toolbar-button {
+    width: 20%;
+    aspect-ratio: 1/1;
+    margin-left: 0;
+    border-radius: 1svh;
+    background-color: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: none;
+    color: white;
+    font-size: 200%;
+}
+
+.message-div {
+    width: 100%;
+    height: 10%;
+    display: flex;
+    justify-content: start;
+    text-align: left;
+    align-items: center;
+    padding: 1svh;
+}
+
+.message {
+    border-radius: 1svh;
+    padding: 0.5svh;
+    background-color: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    width: 80%;
+    height: 100%;
+    text-align: left;
+    display: flex;
+    justify-content: start;
+    align-items: center;
+    color: black;
+}
+
+.self-message {
+    justify-content: end;
+    text-align: right;
+}
+
+#messages::-webkit-scrollbar {
+  width: 8px;
+}
+
+#messages::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+#messages::-webkit-scrollbar-thumb {
+  background-color: #aaa;
+  border-radius: 999px;
+  border: 2px solid transparent;
+  background-clip: content-box;
+}
+
+#messages {
+  scrollbar-width: thin;
+  scrollbar-color: #aaa transparent;
+}
+
+.chat-avatar {
+    height: 100%;
+    max-width: fit-content;
+    aspect-ratio: 1/1;
+    border-radius: 0.5svh;
+    margin-left: 1svh;
 }

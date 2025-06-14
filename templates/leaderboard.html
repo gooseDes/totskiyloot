@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TotskiyLoot</title>
+    {% include 'basic_links.html' %}
+    <link rel="stylesheet" href="/static/css/leaderboard.css">
+</head>
+<body>
+    <div class="content" id="content">
+        {% include 'nav.html' %}
+        <div class="center_fullwidth">
+            <div class="ar9_16">
+                <div id="leaderboard">
+                    {% for user in users %}
+                        <div class="user">
+                            <p class="id">{{loop.index}}</p>
+                            <div class="profile">
+                                <img src="/static/avatars/{{user[0]}}.webp" onerror="this.src = '/static/img/avatar.svg'" alt="" class="avatar">
+                                <p class="name">{{user[0]}}</p>
+                            </div>
+                            <div class="filler"></div>
+                            <div class="money_counter"><i class="fa-solid fa-coins"></i><p class="money">{{user[1]}}</p></div>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {% include 'side_nav.html' %}
+</body>
+</html>

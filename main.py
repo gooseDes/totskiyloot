@@ -19,6 +19,8 @@ task_queue = Queue()
 DELAY_BETWEEN_TASKS = 0.0005
 DELAY_BETWEEN_REQUESTS = 0.1
 last_requests_reload = time.time()
+last_leaderboard_update = 0
+leaderboard = []
 
 if __name__ == '__main__':
     DEBUG = True
@@ -136,6 +138,21 @@ def edit_profile(username):
         return flask.render_template('no_user.html'), 404
     cursor.close()
     return flask.render_template('edit_profile.html', username=user[1], description=user[4])
+
+@app.route('/leaderboard')
+def leaderboard_():
+    users = []
+    conn = get_connection()
+    cursor = conn.cursor()
+    for i in leaderboard:
+        cursor.execute("SELECT * FROM users WHERE id = %s", (i,))
+        user = cursor.fetchone()
+        users.append((user[1], user[3]))
+    return flask.render_template('leaderboard.html', users=users)
+
+@app.route('/contact')
+def contact():
+    return flask.redirect('https://youtu.be/dQw4w9WgXcQ?si=MPy6N9DNbb415bdx')
 
 @socketio.on('connect')
 def handle_connect():
@@ -452,6 +469,15 @@ def process_change_description(data, sid, ip):
 
 def task_worker():
     while True:
+        if time.time() - last_leaderboard_update > 120:
+            conn = get_connection()
+            cursor = conn.cursor()
+            cursor.execute("SELECT * FROM users ORDER BY money DESC")
+            data = cursor.fetchall()
+            leaderboard.clear()
+            for i in data:
+                leaderboard.append(i[0])
+            cursor.close()
         func, args = task_queue.get()
         if (not last_requests.get(args[1])) or (time.time() - last_requests.get(args[1]) > DELAY_BETWEEN_REQUESTS):
             try:
