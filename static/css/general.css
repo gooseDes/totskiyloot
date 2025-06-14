@@ -591,6 +591,7 @@ input[type="number"] {
     text-align: left;
     display: flex;
     justify-content: start;
+    flex-direction: row-reverse;
     align-items: center;
     color: black;
 }
@@ -598,6 +599,12 @@ input[type="number"] {
 .self-message {
     justify-content: end;
     text-align: right;
+    flex-direction: row;
+}
+
+.self-message .chat-avatar {
+    margin-right: 0;
+    margin-left: 1svh;
 }
 
 #messages::-webkit-scrollbar {
@@ -625,5 +632,6 @@ input[type="number"] {
     max-width: fit-content;
     aspect-ratio: 1/1;
     border-radius: 0.5svh;
-    margin-left: 1svh;
+    margin-left: 0;
+    margin-right: 1svh;
 }

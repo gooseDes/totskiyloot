@@ -467,6 +467,31 @@ def process_change_description(data, sid, ip):
     cursor.close()
     request_processed(sid)
 
+@socketio.on('send_message')
+def handle_send_message(data):
+    ip = request.remote_addr
+    sid = request.sid
+    task_queue.put((process_send_message, [data, sid, ip]))
+
+def process_send_message(data, sid, ip):
+    if not data.get('token'):
+        socketio.emit('send_message_result', {'success': False, 'message': 'Token is required.'}, to=sid)
+        return
+    if not data.get('message'):
+        socketio.emit('send_message_result', {'success': False, 'message': 'Message is required.'}, to=sid)
+        return
+    token = data['token']
+    message = data['message']
+    if len(message) > 256:
+        socketio.emit('send_message_result', {'success': False, 'message': 'Message is too long.'}, to=sid)
+        return
+    username = verify_token(token)
+    if not username:
+        socketio.emit('send_message_result', {'success': False, 'message': 'Invalid or expired token.'}, to=sid)
+        return
+    socketio.emit('new_message', {'author': username, 'message': message})
+    socketio.emit('send_message_result', {'success': True}, to=sid)
+
 def task_worker():
     while True:
         if time.time() - last_leaderboard_update > 120:

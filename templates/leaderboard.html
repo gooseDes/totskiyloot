@@ -16,7 +16,7 @@
                     {% for user in users %}
                         <div class="user">
                             <p class="id">{{loop.index}}</p>
-                            <div class="profile">
+                            <div class="profile" onclick="goto('/profile/{{user[0]}}')">
                                 <img src="/static/avatars/{{user[0]}}.webp" onerror="this.src = '/static/img/avatar.svg'" alt="" class="avatar">
                                 <p class="name">{{user[0]}}</p>
                             </div>

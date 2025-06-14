@@ -1,4 +1,5 @@
 window.addEventListener('load', function() {
+    const socket = io(`${location.protocol}//${location.host}`);
     const toolbar = document.getElementById('toolbar');
     const closeButton = document.getElementById('chat-close-button');
     const hideButton = document.getElementById('chat-hide-button');
@@ -67,6 +68,30 @@ window.addEventListener('load', function() {
         }
     });
 
+    socket.on('new_message', data => {
+        if (data.author == localStorage.getItem('username')) return;
+        const message_div = document.createElement('div');
+        message_div.classList.add('message-div');
+        messages.appendChild(message_div);
+        const message = document.createElement('div');
+        message.classList.add('message');
+        const avatar = document.createElement('img');
+        avatar.classList.add('chat-avatar');
+        avatar.onerror = () => {avatar.src = '/static/img/avatar.svg'};
+        avatar.src = `/static/avatars/${data.author}.webp`;
+        avatar.onclick = () => {goto(`/profile/${data.author}`)};
+        message.textContent = data.message;
+        message.appendChild(avatar);
+        message_div.appendChild(message);
+    });
+
+    socket.on('send_message_result', data => {
+        if (!data.success) {
+            showError(data.message);
+            return;
+        }
+    });
+
     function sendMessage() {
         const message_div = document.createElement('div');
         message_div.classList.add('message-div');
@@ -82,8 +107,9 @@ window.addEventListener('load', function() {
         message.textContent = messageInput.value;
         message.appendChild(avatar);
         message_div.appendChild(message);
+        socket.emit('send_message', {'token': localStorage.getItem('token'), 'message': messageInput.value});
+        messageInput.value = '';
     }
 
     sendButton.addEventListener('click', () => sendMessage());
-    messageInput.addEventListener('change', () => sendMessage());
 });
