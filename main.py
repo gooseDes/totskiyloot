@@ -28,6 +28,7 @@ else:
     DEBUG = False
 
 last_requests = {}
+last_chat_messages = []
 
 def create_token(username):
     payload = {
@@ -467,6 +468,15 @@ def process_change_description(data, sid, ip):
     cursor.close()
     request_processed(sid)
 
+@socketio.on('get_last_messages')
+def handle_get_last_messages(data):
+    ip = request.remote_addr
+    sid = request.sid
+    task_queue.put((process_get_last_messages, [data, sid, ip]))
+
+def process_get_last_messages(data, sid, ip):
+    socketio.emit('get_last_messages_result', {'success': True, 'messages': last_chat_messages}, to=sid)
+
 @socketio.on('send_message')
 def handle_send_message(data):
     ip = request.remote_addr
@@ -490,6 +500,9 @@ def process_send_message(data, sid, ip):
         socketio.emit('send_message_result', {'success': False, 'message': 'Invalid or expired token.'}, to=sid)
         return
     socketio.emit('new_message', {'author': username, 'message': message})
+    last_chat_messages.append({'author': username, 'message': message})
+    if len(last_chat_messages) > 20:
+        last_chat_messages.pop(0)
     socketio.emit('send_message_result', {'success': True}, to=sid)
 
 def task_worker():
